@@ -7,7 +7,7 @@ import { useCallback, useRef, useState } from 'react'
 import { AlertTriangle, ArrowRight, Camera, Loader, MapPin, Search, Sparkles } from 'lucide-react'
 import { Button, Card, Field } from '../../components'
 
-const API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || 'http://127.0.0.1:8003').replace(/\/$/, '')
+const API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8003' : '')).replace(/\/$/, '')
 
 const CROPS = ['Paddy', 'Groundnut', 'Maize', 'Tomato', 'Millet', 'Wheat', 'Cotton', 'Sugarcane', 'Soybean', 'Sunflower', 'Other']
 const SEASONS = ['Kharif', 'Rabi', 'Summer']

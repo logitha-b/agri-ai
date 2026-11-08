@@ -16,7 +16,7 @@ import {
 import { AlertTriangle, ArrowRight, BarChart2, Loader, TrendingUp } from 'lucide-react'
 import { Card, Notice, RiskBadge } from '../../components'
 
-const API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || 'http://127.0.0.1:8003').replace(/\/$/, '')
+const API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8003' : '')).replace(/\/$/, '')
 
 const LAC_STATES = [
   'Jharkhand','Chhattisgarh','Madhya Pradesh','Maharashtra',

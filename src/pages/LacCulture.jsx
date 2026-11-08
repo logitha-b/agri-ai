@@ -27,7 +27,7 @@ import LacMarket          from '../components/lac/LacMarket'
 import LacHistory         from '../components/lac/LacHistory'
 import AgroPlanner        from '../components/lac/AgroPlanner'
 
-const API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || '').replace(/\/$/, '')
+const API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
 
 function Impact({ label, value }) {
   return (

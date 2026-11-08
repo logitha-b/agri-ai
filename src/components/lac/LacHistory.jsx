@@ -12,7 +12,7 @@ import {
 import { AlertTriangle, Download, Loader } from 'lucide-react'
 import { Card, Notice } from '../../components'
 
-const API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || 'http://127.0.0.1:8003').replace(/\/$/, '')
+const API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8003' : '')).replace(/\/$/, '')
 const axis = {fontSize:11,fill:'#738176'}
 const tt   = {border:'1px solid #e0e8e0',borderRadius:8,fontSize:12}
 
