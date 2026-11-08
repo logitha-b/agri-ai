@@ -1,0 +1,102 @@
+{
+  "Lac + Kusum agroforestry": {
+    "hosts": [
+      "Kusum (Schleichera oleosa)"
+    ],
+    "seasons": [
+      "Kusmi Aghani (Oct–Dec)",
+      "Kusmi Jethwi (May–Jun)"
+    ],
+    "crops_per_year": 2,
+    "setup_years": 4,
+    "land_req": "Minimum 0.5 acre",
+    "ref_yield_kg_per_acre": 500,
+    "lac_price_per_kg": 165,
+    "other_income": "Timber and oil seeds from Kusum after 15+ years",
+    "setup_cost_per_acre": 18000,
+    "annual_cost_per_acre": 14000,
+    "note": "Kusum requires 4–6 years to mature. Long-term investment — ideal for land-owning farmers.",
+    "suitability": [
+      "Jharkhand",
+      "Chhattisgarh",
+      "Madhya Pradesh",
+      "Odisha"
+    ],
+    "source": "ICAR-IINRG Agroforestry Models — Jharkhand, 2023"
+  },
+  "Lac + Flemingia intercrop": {
+    "hosts": [
+      "Flemingia semialata"
+    ],
+    "seasons": [
+      "Rangeeni Baisakhi (Apr–May)",
+      "Rangeeni Katki (Oct–Nov)"
+    ],
+    "crops_per_year": 2,
+    "setup_years": 2,
+    "land_req": "Any size — even 0.1 acre",
+    "ref_yield_kg_per_acre": 350,
+    "lac_price_per_kg": 150,
+    "other_income": "Green manure from Flemingia prunings (nitrogen fixation)",
+    "setup_cost_per_acre": 9000,
+    "annual_cost_per_acre": 11000,
+    "note": "Best option for small and marginal farmers. Flemingia establishes quickly and can be grown on bunds and wastelands.",
+    "suitability": [
+      "Jharkhand",
+      "Chhattisgarh",
+      "West Bengal",
+      "Maharashtra",
+      "Odisha"
+    ],
+    "source": "ICAR-IINRG Small Farmer Lac Models"
+  },
+  "Lac + Ber + horticulture": {
+    "hosts": [
+      "Ber (Ziziphus mauritiana)"
+    ],
+    "seasons": [
+      "Rangeeni Baisakhi (Apr–May)",
+      "Rangeeni Katki (Oct–Nov)"
+    ],
+    "crops_per_year": 2,
+    "setup_years": 3,
+    "land_req": "0.5–2 acres recommended",
+    "ref_yield_kg_per_acre": 400,
+    "lac_price_per_kg": 155,
+    "other_income": "Ber fruit income (₹8,000–20,000/acre after 3 years)",
+    "setup_cost_per_acre": 14000,
+    "annual_cost_per_acre": 12500,
+    "note": "Dual income from lac and Ber fruit. Ber is drought-tolerant — good for rain-fed areas in Maharashtra and MP.",
+    "suitability": [
+      "Maharashtra",
+      "Madhya Pradesh",
+      "Gujarat",
+      "Andhra Pradesh"
+    ],
+    "source": "ICAR-IINRG Multi-commodity Agroforestry"
+  },
+  "Lac + Timber (Teak/Gamhar)": {
+    "hosts": [
+      "Flemingia semialata",
+      "Ber (temporary)"
+    ],
+    "seasons": [
+      "Rangeeni Baisakhi (Apr–May)"
+    ],
+    "crops_per_year": 1,
+    "setup_years": 2,
+    "land_req": "1+ acres",
+    "ref_yield_kg_per_acre": 280,
+    "lac_price_per_kg": 150,
+    "other_income": "Timber income from Teak/Gamhar after 10–15 years (significant)",
+    "setup_cost_per_acre": 22000,
+    "annual_cost_per_acre": 10000,
+    "note": "Lac provides annual income while timber matures. Long-term wealth creation. Suitable for social forestry programmes.",
+    "suitability": [
+      "Jharkhand",
+      "Chhattisgarh",
+      "West Bengal"
+    ],
+    "source": "JBB Jharkhand Agroforestry Models, 2025"
+  }
+}

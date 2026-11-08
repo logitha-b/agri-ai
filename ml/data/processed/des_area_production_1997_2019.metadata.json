@@ -1,0 +1,221 @@
+{
+  "source": "DES/DACNET workbook (source attribution as stated in workbook)",
+  "source_note_in_workbook": "DACNET",
+  "workbook_title": "District wise and season wise yearly area and production from 1997 to 2019",
+  "source_file": "des_area_production_1997_2019.xlsx",
+  "source_sha256": "cce6a993ba37717cc162089553744177bd7bedb5d1da77c832f7f94c63f9a62d",
+  "sheet": "all crops-season wise",
+  "period": {
+    "start_year": 1997,
+    "end_year": 2019
+  },
+  "record_count": 237088,
+  "duplicate_district_crop_year_keys": 132,
+  "records_in_duplicate_keys": 264,
+  "state_count": 20,
+  "district_count": 598,
+  "crop_count": 52,
+  "yield_unit_standardized": "tonnes per hectare",
+  "yield_summary_tonnes_per_hectare": {
+    "observations": 234396,
+    "minimum": 9.001097694840835e-09,
+    "median": 1.0,
+    "maximum": 4070.0
+  },
+  "yield_area_production_consistency": {
+    "comparable_observations": 217758,
+    "within_1_percent": 217264,
+    "outside_1_percent": 494,
+    "tolerance_note": "A diagnostic only: reported yield is compared with production_tonnes / area_ha; it does not remove or alter source observations."
+  },
+  "outlier_counts_iqr_review_only": {
+    "Arecanut": 234,
+    "Arhar": 374,
+    "Bajra": 72,
+    "Banana": 11,
+    "Barley": 12,
+    "Black pepper": 41,
+    "Cardamom": 39,
+    "Cashewnut": 34,
+    "Castor": 301,
+    "Coriander": 118,
+    "Cotton(lint)": 781,
+    "Cowpea": 11,
+    "Dry chillies": 820,
+    "Garlic": 43,
+    "Ginger": 158,
+    "Gram": 232,
+    "Groundnut": 325,
+    "Guar seed": 77,
+    "Horse-gram": 25,
+    "Jowar": 294,
+    "Jute": 207,
+    "Khesari": 25,
+    "Linseed": 77,
+    "Maize": 601,
+    "Masoor": 71,
+    "Mesta": 144,
+    "Moong": 96,
+    "Moth": 51,
+    "Nigerseed": 63,
+    "Onion": 384,
+    "Other Kharif Pulses": 77,
+    "Other Rabi Pulses": 112,
+    "Other oilseeds": 82,
+    "Peas & beans": 331,
+    "Potato": 17,
+    "Ragi": 179,
+    "Rapeseed & Mustard": 94,
+    "Rice": 70,
+    "Safflower": 20,
+    "Sannhamp": 219,
+    "Sesamum": 386,
+    "Small millets": 199,
+    "Soyabean": 46,
+    "Sugarcane": 534,
+    "Sunflower": 28,
+    "Sweet Potato": 35,
+    "Tobacco": 112,
+    "Turmeric": 107,
+    "Urad": 64,
+    "Wheat": 5
+  },
+  "outlier_observation_count_iqr_review_only": 8438,
+  "source_yield_units": {
+    "default": "kg/ha, converted to tonnes/ha",
+    "Coconut": "nuts/ha; retained in source columns, excluded from tonnes/ha observations"
+  },
+  "source_production_unit_note": "Area is reported in 1000 ha and converted to ha. Standard production is reported in 1000 tonnes and converted to tonnes; bales, gur, and nuts are retained as source values and not mislabeled as crop tonnes.",
+  "comparison": {
+    "comparison_source": "ICRISAT District Level Database",
+    "policy": "Kept separate: overlapping source yields are not merged or silently overridden. Crop names and district names are compared as standardized by the existing processors; no additional equivalence mappings are guessed.",
+    "comparison_available": true,
+    "ambiguous_duplicate_keys_excluded": {
+      "des": 132,
+      "icrisat": 0
+    },
+    "overlapping_keys": 39553,
+    "within_1e-9_tonnes_per_hectare": 3653,
+    "different_yields": 35900,
+    "median_absolute_difference_tonnes_per_hectare": 0.0046534883720932285,
+    "absolute_difference_percentiles_tonnes_per_hectare": {
+      "50": 0.0046534883720932285,
+      "90": 0.33333,
+      "95": 0.6630023796089821,
+      "99": 3.4138114693422357,
+      "100": 221.43936363636362
+    },
+    "absolute_difference_threshold_counts_tonnes_per_hectare": {
+      "0.01": 18230,
+      "0.05": 12681,
+      "0.1": 9325,
+      "0.5": 2605
+    },
+    "relative_difference_threshold_counts_pct": {
+      "1": 17740,
+      "5": 11659,
+      "10": 8249,
+      "25": 3898
+    },
+    "differing_yield_examples": [
+      {
+        "state": "Andhra Pradesh",
+        "district": "Srikakulam",
+        "crop": "Rice",
+        "season": "Annual",
+        "year": 1997,
+        "des_yield_t_ha": 1.5061728395061729,
+        "icrisat_yield_t_ha": 1.48317
+      },
+      {
+        "state": "Andhra Pradesh",
+        "district": "Srikakulam",
+        "crop": "Rice",
+        "season": "Annual",
+        "year": 1998,
+        "des_yield_t_ha": 1.9256619144602851,
+        "icrisat_yield_t_ha": 2.01705
+      },
+      {
+        "state": "Andhra Pradesh",
+        "district": "Srikakulam",
+        "crop": "Rice",
+        "season": "Annual",
+        "year": 1999,
+        "des_yield_t_ha": 1.7269962774602843,
+        "icrisat_yield_t_ha": 1.7775699999999999
+      },
+      {
+        "state": "Andhra Pradesh",
+        "district": "Srikakulam",
+        "crop": "Rice",
+        "season": "Annual",
+        "year": 2000,
+        "des_yield_t_ha": 1.9235232067510548,
+        "icrisat_yield_t_ha": 1.86216
+      },
+      {
+        "state": "Andhra Pradesh",
+        "district": "Srikakulam",
+        "crop": "Rice",
+        "season": "Annual",
+        "year": 2001,
+        "des_yield_t_ha": 2.2025393657130183,
+        "icrisat_yield_t_ha": 2.1326199999999997
+      },
+      {
+        "state": "Andhra Pradesh",
+        "district": "Srikakulam",
+        "crop": "Rice",
+        "season": "Annual",
+        "year": 2002,
+        "des_yield_t_ha": 1.7502275978670827,
+        "icrisat_yield_t_ha": 1.6302699999999999
+      },
+      {
+        "state": "Andhra Pradesh",
+        "district": "Srikakulam",
+        "crop": "Rice",
+        "season": "Annual",
+        "year": 2003,
+        "des_yield_t_ha": 2.2387354269509507,
+        "icrisat_yield_t_ha": 2.21018
+      },
+      {
+        "state": "Andhra Pradesh",
+        "district": "Srikakulam",
+        "crop": "Rice",
+        "season": "Annual",
+        "year": 2004,
+        "des_yield_t_ha": 2.354007979688067,
+        "icrisat_yield_t_ha": 2.3442800000000004
+      },
+      {
+        "state": "Andhra Pradesh",
+        "district": "Srikakulam",
+        "crop": "Rice",
+        "season": "Annual",
+        "year": 2005,
+        "des_yield_t_ha": 1.7845461460446246,
+        "icrisat_yield_t_ha": 1.70141
+      },
+      {
+        "state": "Andhra Pradesh",
+        "district": "Srikakulam",
+        "crop": "Rice",
+        "season": "Annual",
+        "year": 2006,
+        "des_yield_t_ha": 2.527606118934252,
+        "icrisat_yield_t_ha": 2.49633
+      }
+    ]
+  },
+  "model_training_status": "not integrated; overlapping yields conflict with ICRISAT",
+  "quality_review_required": true,
+  "quality_notes": [
+    "Source values outside the interquartile range are flagged for review, not removed.",
+    "The maximum converted yield should be reviewed before using this dataset for modeling.",
+    "Duplicate source rows are preserved with their original worksheet row numbers."
+  ],
+  "processed_at_utc": "2026-10-13T05:35:45.729479+00:00"
+}

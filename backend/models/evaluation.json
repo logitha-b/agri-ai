@@ -1,0 +1,104 @@
+{
+  "accuracy": 1.0,
+  "macro_precision": 1.0,
+  "macro_recall": 1.0,
+  "macro_f1": 1.0,
+  "labels": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "confusion_matrix": [
+    [
+      1369,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1757,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      529,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      665
+    ]
+  ],
+  "classification_report": {
+    "Not Relevant": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 1369.0
+    },
+    "Potentially Relevant": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 1757.0
+    },
+    "Relevant": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 529.0
+    },
+    "Highly Relevant": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 665.0
+    },
+    "accuracy": 1.0,
+    "macro avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4320.0
+    },
+    "weighted avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4320.0
+    }
+  },
+  "model": "RandomForestClassifier",
+  "task": "scheme relevance classification",
+  "random_state": 42,
+  "training_rows": 17280,
+  "test_rows": 4320,
+  "feature_columns": [
+    "state",
+    "district",
+    "crop",
+    "farmer_category",
+    "irrigation",
+    "activity",
+    "scheme_id",
+    "land_area",
+    "annual_income",
+    "age",
+    "activity_match",
+    "crop_match",
+    "state_match",
+    "district_match",
+    "category_match",
+    "irrigation_match",
+    "land_match",
+    "income_match",
+    "age_match"
+  ],
+  "data_note": "Metrics measure agreement with a synthetic rule-derived holdout, not real farmer outcomes."
+}

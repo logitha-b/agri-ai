@@ -1,0 +1,155 @@
+{
+  "freshwater": {
+    "Nucleus implantation": {
+      "duration_months": 18,
+      "species": "Lamellidens marginalis",
+      "method_description": "Freshwater pearl culture with surgical nucleus implantation for round and semi-round pearls.",
+      "stages": [
+        {
+          "key": "collection",
+          "name": "Collection & conditioning",
+          "months": 1,
+          "color": "#2d6a4f",
+          "desc": "Collect healthy wild or farmed mussels (Lamellidens marginalis / corrianus); condition for 2–4 weeks in nursery tanks.",
+          "tasks": ["Source 2,000–3,000 mature mussels", "Inspect for parasites and shell integrity", "Set up conditioning tanks with green water algae", "Record initial stocking counts"]
+        },
+        {
+          "key": "implant",
+          "name": "Nucleus implantation & surgery",
+          "months": 1,
+          "color": "#3d8050",
+          "desc": "Surgical implantation of mantle graft tissue and shell beads by certified technician.",
+          "tasks": ["Engage certified graft technician", "Prepare sterile surgery bench and menthol anaesthetic", "Insert shell bead (2–6 mm) and mantle tissue into gonad", "Record surgery count and bead dimensions"]
+        },
+        {
+          "key": "recovery",
+          "name": "Post-implantation recovery",
+          "months": 1,
+          "color": "#52b788",
+          "desc": "Convalescence in shallow recovery cages; monitor bead rejection and surgical wound healing.",
+          "tasks": ["Daily mortality and bead rejection inspection", "Maintain optimal DO (>6 mg/L) in recovery tank", "Remove mortalities promptly to avoid infection", "Record survival rate at day 7, 14, and 30"]
+        },
+        {
+          "key": "culture",
+          "name": "Grow-out culture",
+          "months": 12,
+          "color": "#74c69d",
+          "desc": "Transfer to main farm pond in suspended PVC/mesh cages at 0.5–1.5 m depth; regular plankton feeding.",
+          "tasks": ["Monthly water quality testing (temp, pH, DO, turbidity)", "Bi-monthly cage bio-fouling removal and scrubbing", "Sample 10 mussels every quarter for mantle health", "Maintain phytoplankton blooms via organic manuring"]
+        },
+        {
+          "key": "preharvest",
+          "name": "Pre-harvest monitoring",
+          "months": 2,
+          "color": "#f4a261",
+          "desc": "Monitor nacre thickness (target >0.4 mm); plan commercial harvesting logistics.",
+          "tasks": ["Sacrifice 5 mussels to inspect nacre deposition thickness", "Assess luster and surface uniformity", "Contact regional buyers, jewellers, and pearl mandis", "Prepare pearl washing and cleaning equipment"]
+        },
+        {
+          "key": "harvest",
+          "name": "Harvest & processing",
+          "months": 1,
+          "color": "#e76f51",
+          "desc": "Open mussels carefully; extract pearls, clean with salt/detergent, buff, and sort by grade.",
+          "tasks": ["Full pond harvest and extraction", "Wash and clean harvested pearls", "Sort by Grade A, B, and C", "Record total yield and calculate net profit"]
+        }
+      ]
+    },
+    "Without implantation": {
+      "duration_months": 12,
+      "species": "Lamellidens marginalis",
+      "method_description": "Natural mantle cavitation / non-nucleated freshwater culture for baroque keshi pearls.",
+      "stages": [
+        {
+          "key": "stocking",
+          "name": "Mussel stocking & conditioning",
+          "months": 1,
+          "color": "#2d6a4f",
+          "desc": "Stock juvenile/subadult mussels in net cages at 2–3 per m².",
+          "tasks": ["Stock mussels in net bags", "Record initial count and dimensions", "Establish daily monitoring routine"]
+        },
+        {
+          "key": "growth",
+          "name": "Growth monitoring",
+          "months": 9,
+          "color": "#74c69d",
+          "desc": "Maintain plankton culture and monitor continuous mantle nacre secretion.",
+          "tasks": ["Monthly water quality testing", "Cage cleaning and algae brushing", "Survival and growth tracking"]
+        },
+        {
+          "key": "prep",
+          "name": "Harvest preparation",
+          "months": 1,
+          "color": "#f4a261",
+          "desc": "Evaluate mussel maturity, size, and market buyer connections.",
+          "tasks": ["Examine sample mussels for pearl yield", "Check wholesale mandi price benchmarks", "Arrange processing workspace"]
+        },
+        {
+          "key": "harvest",
+          "name": "Harvest & grading",
+          "months": 1,
+          "color": "#e76f51",
+          "desc": "Harvest pearls, clean, polish, and classify baroque pearls.",
+          "tasks": ["Extract non-nucleated pearls", "Sort by luster and weight", "Sell to domestic craft and jewellery makers"]
+        }
+      ]
+    }
+  },
+  "marine": {
+    "Long-line culture": {
+      "duration_months": 24,
+      "species": "Pinctada fucata (Indian Akoya)",
+      "method_description": "Open-sea or sheltered bay marine long-line culture in rafts/droppers.",
+      "stages": [
+        {
+          "key": "spat",
+          "name": "Spat collection & hatchery rearing",
+          "months": 2,
+          "color": "#1a5c6e",
+          "desc": "Collect wild spat on artificial collectors or source from CMFRI oyster hatcheries.",
+          "tasks": ["Deploy spat collectors during post-monsoon settlement", "Monitor spat settlement density weekly", "Transfer spat to mesh nursery cages"]
+        },
+        {
+          "key": "nursery",
+          "name": "Nursery rearing",
+          "months": 4,
+          "color": "#2d7a8e",
+          "desc": "Grow spat up to 2.5–3.5 cm in sheltered bays with high microalgal food supply.",
+          "tasks": ["Measure oyster growth monthly", "Scrub fouling organisms and barnacles", "Maintain salinity between 28–35 ppt", "Record monthly survival rate"]
+        },
+        {
+          "key": "implant",
+          "name": "Nucleus implantation surgery",
+          "months": 1,
+          "color": "#3d9aae",
+          "desc": "Skilled implantation of spherical nucleus and mantle graft by experienced technician.",
+          "tasks": ["Condition oysters with menthol", "Graft mantle piece and nucleus into gonad", "Monitor post-surgery convalescence for 10 days", "Record surgical success percentage"]
+        },
+        {
+          "key": "culture",
+          "name": "Grow-out on long-lines",
+          "months": 15,
+          "color": "#4eb8d4",
+          "desc": "Suspend in 10-pocket net droppers from long-line rafts at 5–10 m ocean depth.",
+          "tasks": ["Bi-weekly salinity and DO monitoring", "Monthly cage cleaning and fouling removal", "Pre-monsoon mooring and anchor inspection", "Quarterly survival checks"]
+        },
+        {
+          "key": "preharvest",
+          "name": "Pre-harvest assessment",
+          "months": 1,
+          "color": "#f4a261",
+          "desc": "Sample oysters to evaluate Akoya nacre thickness, orient, and roundness.",
+          "tasks": ["Examine 10 oysters for nacre layer thickness", "Evaluate color, orient, and surface cleanliness", "Liaise with MPEDA export channels"]
+        },
+        {
+          "key": "harvest",
+          "name": "Harvest & grading",
+          "months": 1,
+          "color": "#e76f51",
+          "desc": "Harvest, excise pearls, polish with beeswax/salt, and classify AAA, AA, A, B grades.",
+          "tasks": ["Complete harvest from long-lines", "Excise and polish Akoya pearls", "Grade pearls (AAA, AA, A, B)", "Record revenue and complete export documentation"]
+        }
+      ]
+    }
+  }
+}

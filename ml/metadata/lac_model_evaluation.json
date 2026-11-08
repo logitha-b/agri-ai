@@ -1,0 +1,120 @@
+{
+  "generated": "2026-10-20T16:57:03.368411",
+  "dataset": {
+    "rows": 77,
+    "years": [
+      2012,
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018
+    ],
+    "states": [
+      "Andhra Pradesh",
+      "Assam",
+      "Chhattisgarh",
+      "Gujarat",
+      "Jharkhand",
+      "Madhya Pradesh",
+      "Maharashtra",
+      "Meghalaya",
+      "Odisha",
+      "Uttar Pradesh",
+      "West Bengal"
+    ],
+    "n_climate_features": 15,
+    "validation": "Leave-One-Year-Out (LOYO)"
+  },
+  "M1_climate_only": {
+    "Ridge": {
+      "MAE": 1675.7,
+      "RMSE": 2449.6,
+      "R2": 0.205,
+      "MAPE": 3362.4
+    },
+    "RF": {
+      "MAE": 1044.9,
+      "RMSE": 2109.7,
+      "R2": 0.41,
+      "MAPE": 1315.5
+    },
+    "GBM": {
+      "MAE": 937.1,
+      "RMSE": 1823.1,
+      "R2": 0.56,
+      "MAPE": 977.6
+    }
+  },
+  "M2_lag_enhanced": {
+    "Ridge": {
+      "MAE": 508.3,
+      "RMSE": 879.9,
+      "R2": 0.892,
+      "MAPE": 731.6
+    },
+    "RF": {
+      "MAE": 290.9,
+      "RMSE": 651.3,
+      "R2": 0.941,
+      "MAPE": 153.5
+    },
+    "GBM": {
+      "MAE": 348.3,
+      "RMSE": 644.2,
+      "R2": 0.942,
+      "MAPE": 422.8
+    }
+  },
+  "rice_model": {
+    "Ridge": {
+      "MAE": 642.0,
+      "RMSE": 815.8,
+      "R2": 0.037,
+      "MAPE": 62.9
+    },
+    "RF": {
+      "MAE": 486.7,
+      "RMSE": 630.6,
+      "R2": 0.425,
+      "MAPE": 44.8
+    },
+    "GBM": {
+      "MAE": 432.4,
+      "RMSE": 566.0,
+      "R2": 0.536,
+      "MAPE": 38.5
+    }
+  },
+  "shap_top5": [
+    {
+      "feature": "winter_temp_max_c",
+      "mean_abs_shap": 685.7
+    },
+    {
+      "feature": "monsoon_precip_sum_mm",
+      "mean_abs_shap": 664.38
+    },
+    {
+      "feature": "annual_temp_max_c",
+      "mean_abs_shap": 215.53
+    },
+    {
+      "feature": "pre_monsoon_temp_mean_c",
+      "mean_abs_shap": 146.54
+    },
+    {
+      "feature": "state_code",
+      "mean_abs_shap": 145.63
+    }
+  ],
+  "honest_caveats": [
+    "Only 77 observations (7 years x 11 states). Results are exploratory.",
+    "State-level aggregation hides within-state district variation.",
+    "ERA5 is a reanalysis product (~11km grid), not farm-level measurements.",
+    "No satellite vegetation features included in this version.",
+    "Lac production estimates come from market surveys, not crop-cutting experiments.",
+    "LOYO is conservative but year-level effects may inflate apparent R2."
+  ]
+}

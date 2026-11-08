@@ -1,0 +1,63 @@
+{
+  "reference_prices": {
+    "freshwater": {
+      "Grade A (round, lustrous)": { "min": 80, "modal": 150, "max": 300, "unit": "INR/pearl", "description": "Spherical or near-spherical, mirror-like luster, smooth blemish-free surface" },
+      "Grade B (near-round / button)": { "min": 40, "modal": 80, "max": 150, "unit": "INR/pearl", "description": "Slight asymmetry, good luster, minor pinhead blemishes" },
+      "Grade C (baroque / off-shape)": { "min": 10, "modal": 25, "max": 60, "unit": "INR/pearl", "description": "Irregular shape, moderate luster, commercial craft grade" },
+      "Reject / unsaleable": { "min": 0, "modal": 0, "max": 5, "unit": "INR/pearl", "description": "Chalky, heavy pitting, non-marketable" }
+    },
+    "marine": {
+      "AAA (high luster, round >7mm)": { "min": 1500, "modal": 3000, "max": 8000, "unit": "INR/pearl", "description": "Perfect round, mirror sheen, deep orient, export premium grade" },
+      "AA (good luster, near-round)": { "min": 700, "modal": 1500, "max": 3000, "unit": "INR/pearl", "description": "High commercial grade, minor surface variance" },
+      "A (moderate luster)": { "min": 200, "modal": 600, "max": 1200, "unit": "INR/pearl", "description": "Medium commercial grade, acceptable luster" },
+      "B/C (commercial grade)": { "min": 50, "modal": 150, "max": 400, "unit": "INR/pearl", "description": "Baroque, off-color or thin nacre coating" }
+    }
+  },
+  "cultivation_costs_unit": {
+    "freshwater": {
+      "mussel_procurement_per_1000": 5000,
+      "nucleus_and_surgery_per_1000": 8000,
+      "net_cages_equipment_base": 12000,
+      "feed_and_manure_supplements": 4000,
+      "labour_monitoring_harvest": 15000,
+      "water_management_aeration": 3000,
+      "harvesting_and_processing": 5000,
+      "transport_and_marketing": 3000
+    },
+    "marine": {
+      "spat_seed_procurement": 15000,
+      "nucleus_and_skilled_surgery": 25000,
+      "longline_and_cages": 45000,
+      "boat_diving_equipment": 20000,
+      "labour_maintenance": 30000,
+      "harvesting_and_grading": 10000,
+      "transport_and_marketing": 8000
+    }
+  },
+  "typical_assumptions": {
+    "freshwater": {
+      "standard_pond_acres": 0.5,
+      "standard_stocking_mussels": 2500,
+      "expected_survival_pct": 65.0,
+      "nucleated_pearl_yield_pct": 80.0,
+      "grade_distribution": {
+        "grade_a_pct": 20.0,
+        "grade_b_pct": 35.0,
+        "grade_c_pct": 30.0,
+        "reject_pct": 15.0
+      }
+    },
+    "marine": {
+      "standard_droppers_oysters": 1200,
+      "expected_survival_pct": 55.0,
+      "nucleated_pearl_yield_pct": 75.0,
+      "grade_distribution": {
+        "aaa_pct": 15.0,
+        "aa_pct": 30.0,
+        "a_pct": 35.0,
+        "bc_pct": 20.0
+      }
+    }
+  },
+  "source": "MPEDA / ICAR-CIFE / CMFRI Published Economics Data (2022-2024)"
+}

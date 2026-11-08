@@ -1,0 +1,45 @@
+{
+  "status": "processed",
+  "processed_at_utc": "2026-10-12T09:13:26.216445+00:00",
+  "total_rows": 179489,
+  "missing_values": {
+    "observation_id": 0,
+    "state": 0,
+    "district": 0,
+    "crop": 0,
+    "season": 0,
+    "year": 0,
+    "area_ha": 0,
+    "production_tonnes": 0,
+    "yield_t_ha": 0,
+    "source": 0,
+    "rainfall_mm": 179489,
+    "temperature_c": 179489,
+    "relative_humidity_pct": 179489,
+    "solar_radiation_mj_m2_day": 179489,
+    "previous_observation_yield_t_ha": 5882,
+    "previous_3_observation_mean_t_ha": 5882
+  },
+  "duplicate_rows": 0,
+  "invalid_rows_removed": 106125,
+  "district_count": 311,
+  "state_count": 20,
+  "crop_count": 21,
+  "year_min": 1978,
+  "year_max": 2017,
+  "outlier_counts_iqr_review_only": {
+    "yield_t_ha": 15946,
+    "area_ha": 23562,
+    "production_tonnes": 27215,
+    "rainfall_mm": 0,
+    "temperature_c": 0,
+    "relative_humidity_pct": 0,
+    "solar_radiation_mj_m2_day": 0
+  },
+  "source_files": [
+    "icrisat_crop_production.csv"
+  ],
+  "normalization_transformations": {},
+  "climate_integrated": false,
+  "soil_integrated": false
+}

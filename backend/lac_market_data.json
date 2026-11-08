@@ -1,0 +1,36 @@
+{
+  "published_prices": {
+    "sticklac": {
+      "min": 120,
+      "modal": 165,
+      "max": 220,
+      "unit": "₹/kg",
+      "year": "2017-18",
+      "source": "ICAR-IINRG Statistics 2018"
+    },
+    "seedlac": {
+      "min": 280,
+      "modal": 340,
+      "max": 420,
+      "unit": "₹/kg",
+      "year": "2017-18",
+      "source": "ICAR-IINRG Statistics 2018"
+    },
+    "shellac": {
+      "min": 380,
+      "modal": 450,
+      "max": 560,
+      "unit": "₹/kg",
+      "year": "2017-18",
+      "source": "ICAR-IINRG Statistics 2018"
+    }
+  },
+  "ref_costs": {
+    "Broodlac (inoculation material)": 4200,
+    "Labour (inoculation + harvest)": 6500,
+    "Host-tree maintenance": 2000,
+    "Transport to market": 1500,
+    "Processing / cleaning": 1200,
+    "Miscellaneous": 800
+  }
+}

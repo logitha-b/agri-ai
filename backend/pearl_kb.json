@@ -1,0 +1,130 @@
+[
+  {
+    "id": "freshwater_species",
+    "keys": ["freshwater species", "mussel", "lamellidens", "parreysia", "freshwater mussel", "which species", "species for pond"],
+    "title": "Freshwater Pearl Mussel Species",
+    "answer": "India's primary freshwater pearl mussels are Lamellidens marginalis, Lamellidens corrianus, and Parreysia corrugata. Lamellidens marginalis is the most widely cultured species. These are found across peninsular and eastern India in freshwater rivers, ponds, and reservoirs. They produce small baroque, near-round, and semi-round pearls.",
+    "source": "ICAR-CIFE Freshwater Pearl Culture Manual",
+    "category": "species"
+  },
+  {
+    "id": "marine_species",
+    "keys": ["marine species", "oyster", "pinctada", "akoya", "marine oyster", "sea pearl"],
+    "title": "Marine Pearl Oyster Species",
+    "answer": "India's primary marine pearl oyster is Pinctada fucata (Indian Akoya oyster), cultured mainly in the Gulf of Mannar, Lakshadweep, and Andaman and Nicobar. Pinctada margaritifera (black-lip oyster) is also present. Marine pearl culture technology has been standardized by CMFRI.",
+    "source": "CMFRI / MPEDA Marine Pearl Culture Manual",
+    "category": "species"
+  },
+  {
+    "id": "freshwater_water_quality",
+    "keys": ["suitable", "water quality", "parameters", "freshwater conditions", "pond water", "water test", "ph", "dissolved oxygen"],
+    "title": "Freshwater Pearl Pond Water Quality Standards",
+    "answer": "Optimal freshwater pearl mussel conditions (ICAR-CIFE): Temperature 22-32 deg C, pH 7.0-8.5, Dissolved oxygen > 5 mg/L, Turbidity < 50 NTU, Total hardness 75-300 mg/L CaCO3, Alkalinity 50-200 mg/L. Avoid heavily polluted, stagnant, or seasonally dry water bodies. Regular field testing of DO and pH is mandatory.",
+    "source": "ICAR-CIFE Water Quality Standards",
+    "category": "water_quality"
+  },
+  {
+    "id": "marine_water_quality",
+    "keys": ["marine conditions", "salinity", "sea water", "marine water quality"],
+    "title": "Marine Pearl Oyster Water Quality Standards",
+    "answer": "Optimal marine pearl oyster conditions (CMFRI / MPEDA): Temperature 25-31 deg C, Salinity 28-35 ppt, Dissolved oxygen > 5 mg/L, pH 7.8-8.3, Depth 3-15 m, Current 0.1-0.5 m/s. Avoid sites with harmful algal bloom history, industrial runoff, or severe storm exposure.",
+    "source": "CMFRI / MPEDA Guidelines",
+    "category": "water_quality"
+  },
+  {
+    "id": "nucleus_implantation",
+    "keys": ["nucleus", "implantation", "surgery", "insert", "operation", "grafting", "mantle"],
+    "title": "Nucleus Implantation and Surgery Technique",
+    "answer": "Nucleus implantation involves surgically inserting an irritant nucleus bead (usually fabricated from freshwater mussel shell) alongside a piece of mantle graft tissue into the gonad or mantle cavity of a conditioned mussel/oyster. The animal coats the nucleus with concentric nacre layers. This requires trained technicians; untrained surgery causes >70% mortality or bead rejection. ICAR-CIFE and CMFRI provide hands-on surgical certification.",
+    "source": "ICAR-CIFE Implantation Guide",
+    "category": "technique"
+  },
+  {
+    "id": "culture_duration",
+    "keys": ["how long", "duration", "culture period", "months", "time to harvest", "growth time"],
+    "title": "Pearl Culture Duration and Timeline",
+    "answer": "Freshwater pearl culture (nucleus implantation) requires 18-24 months for commercial nacre thickness (0.3-0.5 mm). Without implantation (non-nucleated mantle pearls), it takes 12 months. Marine Pinctada fucata (long-line culture) takes 18-36 months. Warmer water promotes nacre deposition but increases thermal stress and fouling.",
+    "source": "ICAR-CIFE / CMFRI Cultivation Guides",
+    "category": "duration"
+  },
+  {
+    "id": "stocking_density",
+    "keys": ["stocking", "density", "how many", "mussels per acre", "mussels per m2", "cage density"],
+    "title": "Stocking Density Guidelines",
+    "answer": "Freshwater pond stocking density: 2-4 mussels per m2 in suspended mesh bags or PVC cages at 0.5-1.5 m depth (approx. 8,000-15,000 mussels per acre of managed pond). Marine long-line: 1-2 oysters per pocket in 10-pocket net cages at 20-30 cm spacing. Overcrowding depletes microalgae food and reduces dissolved oxygen, drastically elevating mortality.",
+    "source": "ICAR-CIFE / CMFRI Recommendations",
+    "category": "management"
+  },
+  {
+    "id": "harvest_procedure",
+    "keys": ["harvest", "when to harvest", "pearl ready", "extraction", "harvesting method"],
+    "title": "Harvest and Extraction Protocol",
+    "answer": "Harvesting is conducted when pearl size and luster reach market grade (typically 18-24 months). Always sample 5-10 mussels before harvesting the entire pond to inspect nacre coating thickness. Mussels are carefully opened using a speculum; pearls are excised, washed in clean freshwater/brine, buffed with salt or mild soap, and graded.",
+    "source": "ICAR-CIFE Harvest Guide",
+    "category": "harvest"
+  },
+  {
+    "id": "environmental_risks",
+    "keys": ["risk", "temperature", "heat", "flood", "rain", "environmental risks", "mortality risk"],
+    "title": "Environmental Risks and Mitigations",
+    "answer": "Key environmental risks: (1) High water temperature (>38 deg C in freshwater, >36 deg C in marine) causes mortality and shell opening. (2) Heavy monsoon rains (>400 mm/month) cause pond overflow, siltation, turbidity spikes, and severe DO drops. (3) Summer evaporation leading to stagnant anoxic bottom water. Maintain minimum 1.5 m pond depth and aerate during cloudy days.",
+    "source": "ICAR-CIFE / CMFRI Environmental Risk Guidelines",
+    "category": "risk"
+  },
+  {
+    "id": "dissolved_oxygen_management",
+    "keys": ["dissolved oxygen", "do", "oxygen depletion", "suffocation", "aeration", "hypoxia"],
+    "title": "Dissolved Oxygen Management",
+    "answer": "Dissolved oxygen below 3 mg/L is lethal to mussels and causes gaping and mass mortality. Minimum healthy threshold is 5 mg/L (optimal 6-8 mg/L). DO crashes occur in early morning hours, after continuous overcast days, or following heavy rainfall runoff. Install paddle-wheel aerators or freshwater exchange to safeguard cultured stock.",
+    "source": "ICAR-CIFE Water Quality Guidelines",
+    "category": "water_quality"
+  },
+  {
+    "id": "ph_management",
+    "keys": ["ph", "acidity", "alkalinity", "lime", "acid water"],
+    "title": "pH and Alkalinity Control",
+    "answer": "Freshwater optimal pH is 7.0-8.5. pH below 6.5 accelerates calcium carbonate dissolution from the mussel shell and inhibits nacre formation. pH above 9.0 causes un-ionized ammonia toxicity. Treat acidic ponds with agricultural lime (CaCO3) or dolomite at 200-300 kg/ha to maintain buffering capacity.",
+    "source": "ICAR-CIFE Guidelines",
+    "category": "water_quality"
+  },
+  {
+    "id": "grading_standards",
+    "keys": ["grade", "quality", "shape", "luster", "round", "grading", "color"],
+    "title": "Pearl Grading Standards and Market Classification",
+    "answer": "Indian pearl grading is based on 5 parameters: (1) Shape: Round > Near-round > Drop > Button > Baroque > Keshi. (2) Size: 3-5 mm (small), 5-7 mm (medium), >7 mm (large). (3) Luster: High mirror-like gloss > Medium dull > Chalky. (4) Surface perfection: Free of pits and ridges. (5) Color: White, pink, cream, lavender, and golden. Freshwater yields predominantly baroque/near-round shapes.",
+    "source": "MPEDA Pearl Grading Guide",
+    "category": "market"
+  },
+  {
+    "id": "economics_profitability",
+    "keys": ["price", "profit", "revenue", "cost", "economics", "investment", "income", "budget"],
+    "title": "Pearl Culture Economics and Profitability",
+    "answer": "Reference economics (MPEDA / ICAR-CIFE 2022-24): Freshwater Grade A pearls fetch Rs 80-300/pearl; Grade B Rs 40-150/pearl; Grade C Rs 10-60/pearl. A standard 0.5-acre pond culture cycle (2,000-3,000 implanted mussels) incurs an estimated operational cost of Rs 55,000-75,000 (mussels, nuclei, surgery, cages, labour). Assuming 60% survival and 20% Grade A yield, net estimated returns can reach Rs 70,000-1,20,000 per cycle.",
+    "source": "MPEDA / ICAR-CIFE Economics Data",
+    "category": "economics"
+  },
+  {
+    "id": "training_institutions",
+    "keys": ["training", "learn", "icar", "cife", "cmfri", "ciha", "cifa", "where to learn", "course"],
+    "title": "Training Institutions and Skill Programs",
+    "answer": "ICAR-CIFA (Central Institute of Freshwater Aquaculture, Kausalyaganga, Bhubaneswar, Odisha) conducts regular commercial training programs on freshwater pearl culture. CMFRI (Central Marine Fisheries Research Institute, Kochi and Tuticorin) trains in marine oyster farming. State Fisheries Departments and Krishi Vigyan Kendras (KVKs) also provide local workshops and nucleus implantation kits.",
+    "source": "ICAR-CIFA / CMFRI / MPEDA",
+    "category": "training"
+  },
+  {
+    "id": "cultivation_regions",
+    "keys": ["india", "state", "where", "location", "andhra pradesh", "telangana", "bengal", "odisha"],
+    "title": "Major Cultivation Regions in India",
+    "answer": "Leading freshwater pearl farming states include Andhra Pradesh (East and West Godavari, Krishna, Kolleru Lake), Telangana, West Bengal, Odisha, Assam, Bihar, and Karnataka. Marine pearl culture is suitable along the Tamil Nadu coastline (Gulf of Mannar, Tuticorin), Lakshadweep, and Andaman and Nicobar Islands.",
+    "source": "ICAR-CIFA / CMFRI National Status Reports",
+    "category": "location"
+  },
+  {
+    "id": "pearl_biology",
+    "keys": ["what is", "pearl", "nacre", "how does", "biological formation", "how pearl is formed", "conchiolin"],
+    "title": "Biological Pearl Formation and Nacre Secretion",
+    "answer": "A pearl is formed biologically when the outer epithelial cells of the mussel's mantle tissue invaginate and form a 'pearl sac' around an irritant or implanted nucleus. The cells continuously secrete alternating micro-crystals of calcium carbonate (aragonite) bound by an organic protein matrix (conchiolin). Light refraction through these transparent microscopic crystalline laminations creates the iridescent luster.",
+    "source": "ICAR-CIFE Introduction to Pearl Culture",
+    "category": "biology"
+  }
+]

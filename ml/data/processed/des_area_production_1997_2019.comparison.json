@@ -1,0 +1,124 @@
+{
+  "comparison_source": "ICRISAT District Level Database",
+  "policy": "Kept separate: overlapping source yields are not merged or silently overridden. Crop names and district names are compared as standardized by the existing processors; no additional equivalence mappings are guessed.",
+  "comparison_available": true,
+  "ambiguous_duplicate_keys_excluded": {
+    "des": 132,
+    "icrisat": 0
+  },
+  "overlapping_keys": 39553,
+  "within_1e-9_tonnes_per_hectare": 3653,
+  "different_yields": 35900,
+  "median_absolute_difference_tonnes_per_hectare": 0.0046534883720932285,
+  "absolute_difference_percentiles_tonnes_per_hectare": {
+    "50": 0.0046534883720932285,
+    "90": 0.33333,
+    "95": 0.6630023796089821,
+    "99": 3.4138114693422357,
+    "100": 221.43936363636362
+  },
+  "absolute_difference_threshold_counts_tonnes_per_hectare": {
+    "0.01": 18230,
+    "0.05": 12681,
+    "0.1": 9325,
+    "0.5": 2605
+  },
+  "relative_difference_threshold_counts_pct": {
+    "1": 17740,
+    "5": 11659,
+    "10": 8249,
+    "25": 3898
+  },
+  "differing_yield_examples": [
+    {
+      "state": "Andhra Pradesh",
+      "district": "Srikakulam",
+      "crop": "Rice",
+      "season": "Annual",
+      "year": 1997,
+      "des_yield_t_ha": 1.5061728395061729,
+      "icrisat_yield_t_ha": 1.48317
+    },
+    {
+      "state": "Andhra Pradesh",
+      "district": "Srikakulam",
+      "crop": "Rice",
+      "season": "Annual",
+      "year": 1998,
+      "des_yield_t_ha": 1.9256619144602851,
+      "icrisat_yield_t_ha": 2.01705
+    },
+    {
+      "state": "Andhra Pradesh",
+      "district": "Srikakulam",
+      "crop": "Rice",
+      "season": "Annual",
+      "year": 1999,
+      "des_yield_t_ha": 1.7269962774602843,
+      "icrisat_yield_t_ha": 1.7775699999999999
+    },
+    {
+      "state": "Andhra Pradesh",
+      "district": "Srikakulam",
+      "crop": "Rice",
+      "season": "Annual",
+      "year": 2000,
+      "des_yield_t_ha": 1.9235232067510548,
+      "icrisat_yield_t_ha": 1.86216
+    },
+    {
+      "state": "Andhra Pradesh",
+      "district": "Srikakulam",
+      "crop": "Rice",
+      "season": "Annual",
+      "year": 2001,
+      "des_yield_t_ha": 2.2025393657130183,
+      "icrisat_yield_t_ha": 2.1326199999999997
+    },
+    {
+      "state": "Andhra Pradesh",
+      "district": "Srikakulam",
+      "crop": "Rice",
+      "season": "Annual",
+      "year": 2002,
+      "des_yield_t_ha": 1.7502275978670827,
+      "icrisat_yield_t_ha": 1.6302699999999999
+    },
+    {
+      "state": "Andhra Pradesh",
+      "district": "Srikakulam",
+      "crop": "Rice",
+      "season": "Annual",
+      "year": 2003,
+      "des_yield_t_ha": 2.2387354269509507,
+      "icrisat_yield_t_ha": 2.21018
+    },
+    {
+      "state": "Andhra Pradesh",
+      "district": "Srikakulam",
+      "crop": "Rice",
+      "season": "Annual",
+      "year": 2004,
+      "des_yield_t_ha": 2.354007979688067,
+      "icrisat_yield_t_ha": 2.3442800000000004
+    },
+    {
+      "state": "Andhra Pradesh",
+      "district": "Srikakulam",
+      "crop": "Rice",
+      "season": "Annual",
+      "year": 2005,
+      "des_yield_t_ha": 1.7845461460446246,
+      "icrisat_yield_t_ha": 1.70141
+    },
+    {
+      "state": "Andhra Pradesh",
+      "district": "Srikakulam",
+      "crop": "Rice",
+      "season": "Annual",
+      "year": 2006,
+      "des_yield_t_ha": 2.527606118934252,
+      "icrisat_yield_t_ha": 2.49633
+    }
+  ]
+}

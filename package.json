@@ -1,0 +1,30 @@
+{
+  "name": "agri-economic-intelligence",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/check-translations.js && vite build",
+    "preview": "vite preview",
+    "check-translations": "node scripts/check-translations.js",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "html2pdf.js": "^0.14.0",
+    "i18next": "^26.7.2",
+    "i18next-browser-languagedetector": "^8.3.0",
+    "leaflet": "^1.9.4",
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^17.1.13",
+    "react-router-dom": "^6.28.0",
+    "recharts": "^2.13.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.5"
+  }
+}

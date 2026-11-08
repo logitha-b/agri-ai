@@ -1,0 +1,31 @@
+{
+  "freshwater": {
+    "temperature": { "min": 22.0, "max": 32.0, "unit": "°C", "name": "Water Temperature", "optimal": "22–32°C", "stress_threshold": "Above 38°C causes severe thermal mortality" },
+    "pH": { "min": 7.0, "max": 8.5, "unit": "", "name": "pH", "optimal": "7.0–8.5", "stress_threshold": "<6.5 dissolves shell nacre; >9.0 increases ammonia toxicity" },
+    "dissolved_oxygen": { "min": 5.0, "max": 12.0, "unit": "mg/L", "name": "Dissolved Oxygen (DO)", "optimal": ">5.0 mg/L", "stress_threshold": "<3.0 mg/L causes mussel asphyxiation" },
+    "turbidity": { "min": 0.0, "max": 50.0, "unit": "NTU", "name": "Turbidity", "optimal": "<50 NTU", "stress_threshold": ">80 NTU clogs mussel ctenidia and gills" },
+    "hardness": { "min": 75.0, "max": 300.0, "unit": "mg/L CaCO3", "name": "Total Hardness", "optimal": "75–300 mg/L", "stress_threshold": "<50 mg/L leads to brittle shell and poor nacre mineralization" },
+    "alkalinity": { "min": 50.0, "max": 200.0, "unit": "mg/L", "name": "Total Alkalinity", "optimal": "50–200 mg/L", "stress_threshold": "<40 mg/L causes severe diurnal pH swings" }
+  },
+  "marine": {
+    "temperature": { "min": 25.0, "max": 31.0, "unit": "°C", "name": "Water Temperature", "optimal": "25–31°C", "stress_threshold": "Above 36°C causes gaping mortality" },
+    "pH": { "min": 7.8, "max": 8.3, "unit": "", "name": "pH", "optimal": "7.8–8.3", "stress_threshold": "<7.5 causes shell corrosion" },
+    "dissolved_oxygen": { "min": 5.0, "max": 12.0, "unit": "mg/L", "name": "Dissolved Oxygen (DO)", "optimal": ">5.0 mg/L", "stress_threshold": "<3.5 mg/L causes hypoxic mortality" },
+    "salinity": { "min": 28.0, "max": 35.0, "unit": "ppt", "name": "Salinity", "optimal": "28–35 ppt", "stress_threshold": "<20 ppt during monsoon runoff causes acute mortality in Pinctada fucata" },
+    "turbidity": { "min": 0.0, "max": 30.0, "unit": "NTU", "name": "Turbidity", "optimal": "<30 NTU", "stress_threshold": ">50 NTU silts over oyster beds" }
+  },
+  "corrective_actions": {
+    "temperature_low": { "severity": "Moderate", "action": "Water temperature is below optimal. Reduce shading or wait for seasonal warming. Monitor mussel activity." },
+    "temperature_high": { "severity": "High", "action": "Water temperature exceeds threshold. Increase aeration or freshwater flow. Lower cage depth to cooler stratum (1.5 m)." },
+    "pH_low": { "severity": "High", "action": "Low pH (<7.0) dissolves shells. Apply agricultural lime (CaCO3) or dolomite at 200 kg/ha. Retest after 48h." },
+    "pH_high": { "severity": "Moderate", "action": "High pH (>8.5) risks ammonia toxicity. Exchange 15-20% pond water and reduce excess organic fertilization." },
+    "dissolved_oxygen_low": { "severity": "High", "action": "Dissolved oxygen is critically low (<5 mg/L). Immediately activate mechanical aerators or pump fresh water. Re-test within 2 hours." },
+    "dissolved_oxygen_high": { "severity": "Low", "action": "Oxygen supersaturation from heavy algal bloom. Monitor for gas bubble stress. Discontinue fertilizer input." },
+    "turbidity_high": { "severity": "Moderate", "action": "Turbidity is excessive. Check catchment runoff. Delay surgery or handling until silt settles." },
+    "salinity_low": { "severity": "High", "action": "Low salinity from heavy runoff. Lower marine droppers to deeper salinity layers or relocate oysters to sheltered bays." },
+    "salinity_high": { "severity": "Moderate", "action": "High salinity from summer evaporation. Introduce freshwater exchange if in coastal pond/lagoon." },
+    "hardness_low": { "severity": "Moderate", "action": "Low calcium/hardness restricts nacre formation. Apply agricultural gypsum or calcium carbonate to raise hardness >75 mg/L." },
+    "alkalinity_low": { "severity": "Moderate", "action": "Low alkalinity weakens pH buffering capacity. Apply agricultural lime (CaCO3) to buffer water." }
+  },
+  "source": "ICAR-CIFE (Freshwater) and CMFRI (Marine) Published Guidelines"
+}

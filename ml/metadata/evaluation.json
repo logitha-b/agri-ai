@@ -1,0 +1,31 @@
+{
+  "model": "Random Forest",
+  "test": {
+    "mae_t_ha": 0.3392854812175128,
+    "rmse_t_ha": 0.6606953789165261,
+    "r2": 0.8496482021075578,
+    "samples": 25900
+  },
+  "baseline": {
+    "method": "Mean observed yield in training plus validation data for the same state/district/crop/season; global training mean when that group is absent.",
+    "mae_t_ha": 0.5367167669522545,
+    "rmse_t_ha": 0.9479346558663555,
+    "r2": 0.6904984064897066,
+    "samples": 25900,
+    "improvement_percent": 36.78500428742985
+  },
+  "validation_candidates": [
+    {
+      "model": "Random Forest",
+      "mae_t_ha": 0.2577815614196591,
+      "rmse_t_ha": 0.6380345965059727,
+      "r2": 0.8297467225864285,
+      "samples": 26987
+    }
+  ],
+  "test_years": [
+    2012,
+    2017
+  ],
+  "test_samples": 25900
+}

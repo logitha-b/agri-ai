@@ -1,0 +1,21 @@
+{
+  "status": "ready",
+  "dataset_kind": "synthetic_scenario",
+  "synthetic": true,
+  "file": "ml/data/synthetic/crop_yield_synthetic_projection.csv",
+  "rows": 52938,
+  "distinct_states": 20,
+  "distinct_districts": 311,
+  "distinct_crops": 21,
+  "year_min": 2018,
+  "year_max": 2026,
+  "seed": 42,
+  "source_baseline": "ICRISAT DLD real observations",
+  "baseline_year_range": [
+    1978,
+    2017
+  ],
+  "method": "The real-data Random Forest is rolled forward one year at a time using the previous scenario yields. A residual is independently sampled from the held-out real test residual distribution (clipped to its 1st\u201399th percentiles) to create a reproducible synthetic scenario.",
+  "limitations": "Generated values are hypothetical scenarios, not official observations, current agricultural statistics, forecasts, or validated future outcomes. They are excluded from the real-data training set and real-data metrics.",
+  "generated_at_utc": "2026-10-13T07:16:43.365676+00:00"
+}

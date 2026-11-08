@@ -1,0 +1,17 @@
+feature,mean_abs_shap
+winter_temp_max_c,685.7005813256249
+monsoon_precip_sum_mm,664.3829179022217
+annual_temp_max_c,215.52976765297902
+pre_monsoon_temp_mean_c,146.53615101107712
+state_code,145.6323685791381
+annual_temp_mean_c,111.96099328558184
+post_monsoon_temp_max_c,107.88961441434965
+annual_precip_sum_mm,73.84610928155904
+pre_monsoon_precip_sum_mm,64.90114074656066
+pre_monsoon_temp_max_c,47.595071842527084
+winter_temp_mean_c,44.66382367798605
+post_monsoon_temp_mean_c,40.75851433506739
+winter_precip_sum_mm,36.381205170804904
+post_monsoon_precip_sum_mm,27.588536334451643
+monsoon_temp_mean_c,20.780870799043967
+monsoon_temp_max_c,9.774743893032149

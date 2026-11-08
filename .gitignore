@@ -1,0 +1,98 @@
+# ==============================================================================
+# AGRI-ECONOMIC INTELLIGENCE PLATFORM - PRODUCTION .GITIGNORE
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Environment Variables & Secrets (CRITICAL SECURITY)
+# ------------------------------------------------------------------------------
+.env
+.env.local
+.env.*.local
+*.env
+backend/.env
+
+# ------------------------------------------------------------------------------
+# 2. Large Datasets, Databases & Model Files (Preserved on Local Drive)
+# ------------------------------------------------------------------------------
+# Soil nutrient datasets (1.05 GB CSV / 3.06 GB SQLite DB)
+soil-nutrient-analysis.csv
+ml/data/water/soil-nutrient-analysis.csv
+ml/data/water/soil-nutrients.db*
+data/soil_nutrients.db*
+data/soil_health.db*
+
+# Reservoir CWC boundaries (239 MB KML)
+reservoir.kml
+ml/data/water/reservoir.kml
+
+# Database files
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Trained ML Models, Weights & Checkpoints
+*.joblib
+*.pkl
+*.pickle
+*.pt
+*.pth
+*.onnx
+
+# ------------------------------------------------------------------------------
+# 3. Node.js & Frontend Build Outputs
+# ------------------------------------------------------------------------------
+node_modules/
+dist/
+dist-ssr/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ------------------------------------------------------------------------------
+# 4. Python Virtual Environments, Bytecode & Caches
+# ------------------------------------------------------------------------------
+.venv/
+backend/.venv/
+venv/
+env/
+ENV/
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+*/*/*/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ------------------------------------------------------------------------------
+# 5. User Conversation Recordings & Scratch/Test Logs
+# ------------------------------------------------------------------------------
+voice_data/
+test-results/
+playwright-report/
+*.log
+scratch_*.json
+scratch_*.html
+scratch_*.txt
+scratch/
+
+# ------------------------------------------------------------------------------
+# 6. Operating System, Binaries & Editor Files
+# ------------------------------------------------------------------------------
+bin/
+*.exe
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*.bak
+

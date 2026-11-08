@@ -1,0 +1,60 @@
+{
+  "sources": [
+    {
+      "name": "ICRISAT District Level Database",
+      "organization": "International Crops Research Institute for the Semi-Arid Tropics (ICRISAT)",
+      "url": "https://www.icrisat.org/resources/data/district-level-data",
+      "usage": "Historical district-level yields and crop area/production; the supplied wide-format export is reshaped using its documented units.",
+      "integrated": true,
+      "download_date": null,
+      "dataset_version": "ICRISAT-District Level Data.csv",
+      "rows_used": 179489,
+      "district_count": 311,
+      "crop_count": 21,
+      "year_range": [
+        1978,
+        2017
+      ]
+    },
+    {
+      "name": "District-wise, season-wise crop production statistics",
+      "organization": "Ministry of Agriculture & Farmers Welfare, Department of Agriculture & Farmers Welfare, Directorate of Economics and Statistics",
+      "url": "https://data.gov.in/resource/district-wise-season-wise-crop-production-statistics-1997",
+      "usage": "Official district, crop, season, year, area, production, and yield observations when a source file is supplied.",
+      "integrated": false,
+      "download_date": null,
+      "dataset_version": null,
+      "rows_used": null,
+      "district_count": null,
+      "crop_count": null,
+      "year_range": null
+    },
+    {
+      "name": "NASA POWER Daily Point",
+      "organization": "NASA Langley Research Center",
+      "url": "https://power.larc.nasa.gov/",
+      "usage": "Observed precipitation, temperature, humidity, and solar radiation for user-supplied district-season periods and coordinates.",
+      "integrated": false,
+      "download_date": null,
+      "dataset_version": null,
+      "rows_used": null,
+      "district_count": null,
+      "crop_count": null,
+      "year_range": null
+    },
+    {
+      "name": "SoilGrids",
+      "organization": "ISRIC \u2014 World Soil Information",
+      "url": "https://isric.org/explore/soilgrids/",
+      "usage": "Optional soil information; no district-level soil values are currently integrated.",
+      "integrated": false,
+      "download_date": null,
+      "dataset_version": null,
+      "rows_used": null,
+      "district_count": null,
+      "crop_count": null,
+      "year_range": null
+    }
+  ],
+  "status": "integrated"
+}
