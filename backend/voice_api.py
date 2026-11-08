@@ -967,11 +967,36 @@ def _summarize_for_gemini(module_id: str | None, result: dict | None) -> str:
             )
 
         if module_id == "schemes" and result.get("recommendations"):
-            recs = result["recommendations"][:3]
-            lines = [f"{r['scheme_name']} ({r['relevance_class']}, {round(r['ml_confidence']*100)}%)" for r in recs]
+            _REL_WEIGHT = {"Highly Relevant": 3, "Relevant": 2, "Potentially Relevant": 1, "Not Relevant": 0}
+            sorted_recs = sorted(
+                result["recommendations"],
+                key=lambda r: (_REL_WEIGHT.get(r.get("relevance_class", ""), 0), r.get("ml_confidence", 0)),
+                reverse=True
+            )
+            relevant_recs = [r for r in sorted_recs if _REL_WEIGHT.get(r.get("relevance_class", ""), 0) > 0]
+            recs = (relevant_recs or sorted_recs)[:5]
+            lines = []
+            for r in recs:
+                s_name = r.get("scheme_name", "Scheme")
+                rel = r.get("relevance_class", "Relevant")
+                conf = round(r.get("ml_confidence", 0.9) * 100)
+                why = r.get("why", "")
+                benefits = (r.get("details") or {}).get("benefits", "")
+                elig = "; ".join((r.get("details") or {}).get("eligibility_criteria", [])[:2])
+                lines.append(f"  • {s_name} ({rel}, {conf}% match):\n    Benefits: {benefits}\n    Why: {why}\n    Eligibility: {elig}")
             s = result.get("summary", {})
-            return (f"\nSCHEMES (ML analysis): {s.get('schemes_analyzed',0)} analyzed, "
-                    f"{s.get('highly_relevant',0)} highly relevant.\n" + "\n".join(lines) + "\n")
+            return (
+                f"\nGOVERNMENT SCHEMES & SUBSIDIES (ML Analysis & Eligibility Engine):\n"
+                f"  Total Schemes Evaluated: {s.get('schemes_analyzed', len(recs))} | Highly Relevant: {s.get('highly_relevant', len(recs))}\n"
+                f"  Top Matched Schemes for Farmer:\n"
+                + "\n".join(lines) + "\n"
+                f"INSTRUCTION TO AI:\n"
+                f"  1. Acknowledge the farmer's specific land area, crop, and location.\n"
+                f"  2. Direct Answer: Present the top matching government schemes and subsidies clearly, explaining the financial benefits and assistance provided.\n"
+                f"  3. State clear eligibility requirements and required documents for applying.\n"
+                f"  4. Inform the farmer that detailed scheme application cards and steps are available in the Government Schemes view below.\n"
+                f"  5. Do NOT give crop recommendation or alternative crops when the farmer asked for government schemes.\n"
+            )
 
         if module_id == "crop_recommendation" and (result.get("candidates") or result.get("ranked")):
             candidates = result.get("candidates") or result.get("ranked") or []
@@ -1620,6 +1645,13 @@ _STATE_ALIASES: dict[str, str] = {
 
 # District canonical mapping across regional scripts
 _DISTRICT_ALIASES: dict[str, tuple[str, str]] = {
+    # English colloquial / typo variants -> (District, State)
+    "trvalu": ("Thiruvallur", "Tamil Nadu"),
+    "tiruvalu": ("Thiruvallur", "Tamil Nadu"),
+    "tiruvallu": ("Thiruvallur", "Tamil Nadu"),
+    "tiruvallur": ("Thiruvallur", "Tamil Nadu"),
+    "thiruvalur": ("Thiruvallur", "Tamil Nadu"),
+    "thiruvallur": ("Thiruvallur", "Tamil Nadu"),
     # Tamil script districts -> (District, State)
     "திருவள்ளூர்": ("Thiruvallur", "Tamil Nadu"),
     "காஞ்சிபுரம்": ("Kanchipuram", "Tamil Nadu"),
@@ -3238,10 +3270,40 @@ def _detect_module(question: str, farmer_ctx: dict | None = None) -> tuple[str |
         "ବଜାର", "ଦର", "ଲାଭ", "କେଉଁଠି ବିକ୍ରି", "ନିକଟସ୍ଥ ବଜାର", "ନିଟ୍ ଲାଭ"
     ])
 
-    is_rec_query = any(w in q for w in rec_patterns) or (
+    # Government Schemes intent routing override across all 8 languages
+    is_scheme_query = any(w in q for w in [
+        # English
+        "scheme", "schemes", "subsidy", "subsidies", "yojana", "pm kisan", "pm-kisan", "pmfby",
+        "kisan credit", "kcc", "soil health card scheme", "government assistance", "government grant",
+        "government benefit", "financial assistance", "subsidy scheme", "welfare scheme", "farm subsidy",
+        "farmer subsidy", "government schemes", "central scheme", "state scheme",
+        # Tamil
+        "திட்ட", "திட்டம்", "திட்டங்கள்", "அரசுத் திட்ட", "அரசு திட்ட", "மானிய", "அரசுத் திட்டம்",
+        "அரசுத் திட்டங்கள்", "அரசு திட்டம்", "அரசு திட்டங்கள்", "மானியங்கள்", "மானியம்",
+        "உதவித்தொகை", "விவசாய திட்டம்", "கிசான்", "அரசு உதவி", "அரசு நலம்",
+        # Hindi
+        "सरकारी योजना", "सरकारी योजनाएं", "सरकारी योजनाओं", "योजनाएं", "योजना", "सब्सिडी", "अनुदान",
+        "कृषि योजना", "पीएम किसान", "किसान क्रेडिट", "सरकारी सहायता", "कल्याणकारी योजना",
+        # Telugu
+        "పథక", "పథకాలు", "పథకం", "ప్రభుత్వ పథక", "ప్రభుత్వ పథకాలు", "ప్రభుత్వ పథకం", "సబ్సిడీ",
+        "రైతు భరోసా", "రైతు పథకాలు", "పీఎం కిసాన్", "ప్రభుత్వ సహాయం",
+        # Kannada
+        "ಯೋಜನೆ", "ಯೋಜನೆಗಳು", "ಸರ್ಕಾರಿ ಯೋಜನೆ", "ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು", "ಸಬ್ಸಿಡಿ", "ರೈತ ಯೋಜನೆ",
+        "ಸರ್ಕಾರದ ಯೋಜನೆ", "ಪಿಎಂ ಕಿಸಾನ್", "ಸರ್ಕಾರಿ ನೆರವು",
+        # Malayalam
+        "പദ്ധതി", "പദ്ധതികൾ", "സർക്കാർ പദ്ധതി", "സർക്കാർ പദ്ധതികൾ", "സബ്‌സിഡി", "കൃഷി പദ്ധതി",
+        "പിഎം കിസാൻ", "സർക്കാർ സഹായം",
+        # Punjabi
+        "ਸਕੀਮ", "ਸਕੀਮਾਂ", "ਸਰਕਾਰੀ ਸਕੀਮ", "ਸਰਕਾਰੀ ਸਕੀਮਾਂ", "ਸਬਸਿਡੀ", "ਕਿਸਾਨ ਸਕੀਮ", "ਪੀਐਮ ਕਿਸਾਨ", "ਸਰਕਾਰੀ ਸਹਾਇਤਾ",
+        # Odia
+        "ଯୋଜନା", "ସରକାରୀ ଯୋଜନା", "ଯୋଜନାଗୁଡ଼ିକ", "ସବସିଡି", "କୃଷି ଯୋଜନା", "ପିଏମ କିଷାନ", "ସରକାରୀ ସହାୟତା"
+    ])
+
+    is_rec_query = (any(w in q for w in rec_patterns) or (
         any(r in q for r in ["recommend", "recommendation", "suggest", "suggestion", "suitable", "alternate", "alternative", "rotation"])
-        and any(c in q for c in ["crop", "crops", "field", "farm", "grow", "plant", "land", "soil"])
-    )
+        and any(c in q for c in ["crop", "crops", "grow", "plant", "sow"])
+        and not is_scheme_query
+    )) and not is_scheme_query
     if is_lac_query:
         if any(w in q for w in ["suitable", "suitability", "evaluate", "start", "host tree", "host trees", "environmental condition", "conditions", "zone", "belt", "land", "उपयुक्त", "उपयूट", "पेड़", "पेड़", "पेड़ो", "पेड़ों", "शुरू", "जांचे", "जांचें", "पर्यावरण"]):
             best_id, best_score = "lac_suitability", 55
@@ -3274,6 +3336,8 @@ def _detect_module(question: str, farmer_ctx: dict | None = None) -> tuple[str |
             best_id, best_score = "pearl_guidance", 45
         else:
             best_id, best_score = "pearl_suitability", 45
+    elif is_scheme_query:
+        best_id, best_score = "schemes", 55
     elif is_flood_query:
         best_id, best_score = "flood_risk", 50
     elif is_cf_query:
@@ -3345,9 +3409,9 @@ Available modules:
 - weather: weather, rainfall, temperature, climate, வானிலை, மழை, मौसम, तापमान, వాతావరణం, ಹವಾಮಾನ, കാലാവസ്ഥ, ਮੌਸਮ, ପାଣିପାଗ
 - flood_risk: flood, water risk, waterlogging, flooding, inundation, வெள்ளம், வெள்ள அபாயம், बाढ़, बाड, बाढ, जलभराव, जल भराव, जल जमाव, निचले क्षेत्र, వరద, వరద ప్రమాదం, ಪ್ರವಾಹ, വെള്ളപ്പൊക്കം, ਹੜ੍ਹ, ବନ୍ୟା. NOTE: If user mentions flood, waterlogging, or risk assessment along with weather, prioritize flood_risk over generic weather.
 - market: market price, sell price, mandi rate, commodity price, profit, சந்தை விலை, மண்டி, बाजार, मंडी भाव, మార్కెట్ ధర, మండి, ಮಾರುಕಟ್ಟೆ ಬೆಲೆ, വിപണി വില, ਮੰਡੀ ਭਾਅ, ବଜାର ଦର
-- schemes: government schemes, subsidies, yojana, PM Kisan, அரசுத் திட்டங்கள், அரசு திட்டம், மானியம், सरकारी योजना, योजनाएं, ప్రభుత్వ పథకాలు, పథకాలు, ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು, സർക്കാർ പദ്ധതികൾ, ਸਰਕਾਰੀ ਸਕੀਮਾਂ, ସରକାରୀ ଯୋଜନା
+- schemes: government schemes, subsidies, yojana, PM Kisan, அரசுத் திட்டங்கள், அரசு திட்டம், மானியம், सरकारी योजना, योजनाएं, ప్రభుత్వ పథకాలు, పథకాలు, ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು, സർക്കാർ പദ്ധതികൾ, ਸਰਕਾਰੀ ਸਕੀਮਾਂ, ସରକାରୀ ଯୋଜନା. NOTE: If user asks for government schemes, subsidies, yojana, or financial assistance (even if mentioning their crop, field, land, or asking "suggest me schemes"), ALWAYS classify as schemes, NOT crop_recommendation.
 - production: crop yield, how much will I get, production estimate, harvest output, மகசூல், உற்பத்தி, விளைச்சல், पैदावार, उत्पादन, उपज, దిగుబడి, ఉత్పత్తి, ಇಳುವರಿ, വിളവ്, ਝਾੜ, ଅମଳ
-- crop_recommendation: which crop to grow, best crop suggestion, suitable crop, பயிர் பரிந்துரை, எந்த பயிர், फसल सिफारिश, कौन सी फसल, పంట సిఫార్సు, ఏ పంట, ಬೆಳೆ ಶಿಫಾರಸು, വിള ശുപാർശ, ਫ਼ਸਲ ਦੀ ਸਿਫ਼ਾਰਸ਼, ଫସଲ ସୁପାରିଶ
+- crop_recommendation: which crop to grow, best crop suggestion, suitable crop, crop selection, alternate crops, பயிர் பரிந்துரை, எந்த பயிர், फसल सिफारिश, कौन सी फसल, పంట సిఫార్సు, ఏ పంట, ಬೆಳೆ ಶಿಫಾರಸು, വിള ശുപാർശ, ਫ਼ਸਲ ਦੀ ਸਿਫ਼ਾਰਸ਼, ଫସଲ ସୁପାରିଶ. NOTE: Do NOT classify as crop_recommendation if the user is asking for government schemes, subsidies, or financial assistance.
 - cashflow: cash flow, money inflow, money outflow, expenses, income, net cash flow, working capital, budget, பணப்புழக்கம், வருமானம், செலவு, நிதி, வரவு, कैश फ्लो, आमदनी, खर्च, बजट, నగదు ప్రవాహం, ఆదాయం, ఖర్చులు, ಬಜೆಟ್, ബജറ്റ്
 - soil_nutrients: soil health, NPK, fertilizer, soil test, soil nutrients, மண் வளம், மண் பரிசோதனை, உரம், मिट्टी की जांच, खाद, उर्वरक, నేల ఆరోగ్యం, ఎరువులు, ಮಣ್ಣು ಪರೀಕ್ಷೆ, മണ്ണ് പരിശോധന
 - disease: crop disease, pest, blight, spots on leaves, disease detection, insect, நோய், பூச்சி, இலைப்புள்ளி, रोग, बीमारी, कीट, தெగులు, పురుగు, ರೋಗ, കീടങ്ങൾ, ਬਿਮਾਰੀ, ରୋଗ. NOTE: Do NOT classify lac culture questions as disease even if pests, insects, or crop damage are mentioned.
@@ -4028,6 +4092,18 @@ async def assistant_chat(req: ChatRequest) -> ChatResponse:
             if "flood_risk" in detected_module_ids:
                 detected_module_ids.remove("flood_risk")
             detected_module_ids.insert(0, "flood_risk")
+        elif rec_id == "schemes" or any(w in msg_l for w in [
+            "scheme", "schemes", "subsidy", "subsidies", "yojana", "pm kisan", "pm-kisan", "pmfby",
+            "kisan credit", "kcc", "திட்டம்", "திட்டங்கள்", "அரசு திட்டம்", "அரசுத் திட்டம்",
+            "மானிய", "மானியம்", "योजना", "सरकारी योजना", "పథక", "పథకం", "పథకాలు",
+            "యೋಜನೆ", "പദ്ധതി", "ਸਕੀਮ", "ଯୋଜନା"
+        ]):
+            for bad_m in ("crop_recommendation", "crop_health", "weather", "disease"):
+                while bad_m in detected_module_ids:
+                    detected_module_ids.remove(bad_m)
+            if "schemes" in detected_module_ids:
+                detected_module_ids.remove("schemes")
+            detected_module_ids.insert(0, "schemes")
         elif rec_id == "crop_loss":
             if "crop_recommendation" in detected_module_ids:
                 detected_module_ids.remove("crop_recommendation")
@@ -4558,9 +4634,12 @@ Return only JSON."""
 
     elif module_id == "schemes":
         activity = _detect_activity(req.message)
+        land_area_val = float(extracted.get("land_area_acres") or (float(extracted["land_area_hectares"]) * 2.47105 if extracted.get("land_area_hectares") else DEFAULT_FARMER["land_area"]))
         body = {
-            "state": state, "district": district, "crop": crop,
-            "land_area": float(extracted.get("land_area_acres", DEFAULT_FARMER["land_area"])),
+            "state": state or "Tamil Nadu",
+            "district": district or "Thiruvallur",
+            "crop": crop or "Paddy",
+            "land_area": land_area_val,
             "farmer_category": DEFAULT_FARMER["category"],
             "irrigation": DEFAULT_FARMER["irrigation"],
             "activity": activity,
@@ -5648,9 +5727,10 @@ Return only JSON."""
                         m_res["preview_image_url"] = quality_info.get("preview_url") if quality_info else None
                     return m_res
                 if mid == "schemes":
+                    mid_area = float(extracted.get("land_area_acres") or (float(extracted["land_area_hectares"]) * 2.47105 if extracted.get("land_area_hectares") else DEFAULT_FARMER["land_area"]))
                     return await _post(f"{SCHEME_API}/predict-schemes", {
-                        "state": state, "district": district, "crop": crop,
-                        "land_area": float(extracted.get("land_area_acres", DEFAULT_FARMER["land_area"])),
+                        "state": state or "Tamil Nadu", "district": district or "Thiruvallur", "crop": crop or "Paddy",
+                        "land_area": mid_area,
                         "farmer_category": DEFAULT_FARMER["category"],
                         "irrigation": DEFAULT_FARMER["irrigation"],
                         "activity": _detect_activity(req.message),
