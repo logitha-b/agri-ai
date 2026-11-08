@@ -47,11 +47,25 @@ import ModuleResultRenderer from '../components/ModuleResultRenderer'
 const VOICE_API = (import.meta.env.VITE_VOICE_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV && typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:8004` : '')).replace(/\/$/, '')
 const HEALTH_API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV && typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:8003` : '')).replace(/\/$/, '')
 
+const safeParseJson = async (res) => {
+  if (!res) return null
+  const ct = (res.headers?.get('content-type') || '').toLowerCase()
+  if (ct.includes('application/json')) {
+    return await res.json().catch(() => null)
+  }
+  const text = await res.text().catch(() => '')
+  try {
+    return JSON.parse(text)
+  } catch {
+    return text ? { detail: text } : null
+  }
+}
+
 const callVoiceApi = async (path, options = {}) => {
   const cleanPath = path.startsWith('/') ? path : `/${path}`
   const candidates = [
-    cleanPath, // Vite dev-server proxy or production reverse proxy
     ...(VOICE_API ? [`${VOICE_API}${cleanPath}`] : []),
+    cleanPath, // Vite dev-server proxy or production reverse proxy
     ...(import.meta.env.DEV ? [`http://127.0.0.1:8004${cleanPath}`, `http://localhost:8004${cleanPath}`] : []),
   ]
   let lastErr = null
@@ -59,15 +73,20 @@ const callVoiceApi = async (path, options = {}) => {
     try {
       const res = await fetch(url, options)
       const ct = (res.headers.get('content-type') || '').toLowerCase()
-      if (ct.includes('text/html') && !cleanPath.endsWith('.html')) {
-        continue // Skip Vite SPA index.html fallback
+      // Skip if static host returned HTML or non-JSON 404/405 method error
+      if (
+        (ct.includes('text/html') && !cleanPath.endsWith('.html')) ||
+        (res.status === 405) ||
+        (res.status === 404 && !ct.includes('application/json'))
+      ) {
+        continue
       }
       return res
     } catch (err) {
       lastErr = err
     }
   }
-  throw lastErr || new Error('Failed to connect to Voice backend on port 8004')
+  throw lastErr || new Error('Failed to connect to Voice backend. Ensure Cloudflare Tunnel is active.')
 }
 
 
@@ -1150,64 +1169,44 @@ export default function VoiceAssistant() {
   useEffect(() => {
 
     callVoiceApi('/api/voice/health')
-
-      .then(r => r.json())
-
-      .then(d => setBackendOk(d))
-
+      .then(async r => {
+        if (!r.ok) return false
+        return await safeParseJson(r)
+      })
+      .then(d => setBackendOk(d || false))
       .catch(() => setBackendOk(false))
-
   }, [])
 
   // Scroll to bottom on new messages
-
   useEffect(() => {
-
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-
   }, [messages])
 
   // Load conversation list from backend
-
   const loadConvList = useCallback(async () => {
-
     try {
-
       const r = await callVoiceApi(`/api/conversations?user_id=${USER_ID}`)
-
-      if (r.ok) {
-
-        const d = await r.json()
-
-        setConvList(d.conversations || [])
-
-        lsSaveConvList(d.conversations || [])
-
+      if (r && r.ok) {
+        const d = await safeParseJson(r)
+        if (d && d.conversations) {
+          setConvList(d.conversations || [])
+          lsSaveConvList(d.conversations || [])
+        }
       }
-
     } catch {
-
       // use localStorage fallback
-
     }
-
   }, [])
 
   useEffect(() => { loadConvList() }, [loadConvList])
 
   // Load a specific conversation
-
   const loadConversation = async (id) => {
-
     try {
-
       const r = await callVoiceApi(`/api/conversations/${id}?user_id=${USER_ID}`)
-
-      if (r.ok) {
-
-        const d  = await r.json()
-
-        const ms = d.conversation?.messages || []
+      if (r && r.ok) {
+        const d = await safeParseJson(r)
+        const ms = d?.conversation?.messages || []
 
         setMessages(ms)
 
@@ -1363,10 +1362,10 @@ export default function VoiceAssistant() {
         fd.append('language', 'auto')
       }
 
-      const r    = await callVoiceApi('/api/voice/transcribe', { method:'POST', body:fd })
-      const data = await r.json()
+      const r = await callVoiceApi('/api/voice/transcribe', { method:'POST', body:fd })
+      const data = await safeParseJson(r)
 
-      if (!r.ok) throw new Error(data.detail || 'Transcription failed')
+      if (!r.ok || !data) throw new Error(data?.detail || `Transcription failed (${r?.status || 'network error'})`)
 
       if (!data.transcript) {
         setStatus('idle')
@@ -1482,8 +1481,8 @@ export default function VoiceAssistant() {
             method:'POST', headers:{'Content-Type':'application/json'},
             body: JSON.stringify(body),
           })
-          data = await r.json()
-          if (!r.ok) throw new Error(data?.detail || 'Chat API error')
+          data = await safeParseJson(r)
+          if (!r.ok || !data) throw new Error(data?.detail || `Chat API returned HTTP ${r?.status || 'error'}`)
           fetchErr = null
           break
         } catch (err) {
@@ -1637,10 +1636,9 @@ export default function VoiceAssistant() {
       if (lastUserMsg?.content) fd.append('crop', lastUserMsg.content.slice(0, 60))
 
       const r    = await fetch(`${HEALTH_API}/api/health/disease`, { method: 'POST', body: fd })
+      const data = await safeParseJson(r)
 
-      const data = await r.json()
-
-      if (!r.ok) throw new Error(data.detail || 'Disease analysis failed')
+      if (!r.ok || !data) throw new Error(data?.detail || `Disease analysis failed (${r?.status || 'network error'})`)
 
       const diseaseName = data.disease_name || 'Analysis complete'
 
