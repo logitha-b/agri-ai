@@ -776,45 +776,16 @@ export function DiseasePage(){
       return
     }
     setError('')
+    setAnalysis(null)
+    setBusy(true)
 
-    // 1. Instant client-side inspection via canvas (~5 milliseconds)
+    // 1. Instant client-side inspection via canvas for pixel stats (~5 milliseconds)
     let clientScan = null
     try {
       clientScan = await inspectCropImage(imageFile, cropHint || 'Crop', part === 'Auto-detect' ? 'Leaf' : part)
     } catch (err) {
       console.warn('Local canvas analysis note:', err)
     }
-
-    // Immediately show preliminary visual condition stats to user (no blank screen!)
-    if (clientScan) {
-      const damaged = clientScan.status === 'Needs attention'
-      setAnalysis(prev => ({
-        ...prev,
-        ...clientScan,
-        is_plant: true,
-        crop_detected: cropHint || 'Crop / Plant',
-        disease_detected: damaged,
-        disease_name: damaged ? (cropHint ? `${cropHint} Stress / Discoloration` : 'Crop Tissue Discoloration') : 'Healthy Crop',
-        scientific_name: null,
-        severity: damaged ? 'Moderate' : 'Healthy',
-        confidence: 'Instant visual scan',
-        affected_parts: [part !== 'Auto-detect' ? part : 'Leaf'],
-        visual_symptoms: [
-          `Visual discoloration pattern: ${clientScan.pattern || 'color stress detected'}`,
-          `Healthy green: ${clientScan.green}%, Stressed/chlorosis: ${clientScan.yellow}%, Necrotic/brown: ${clientScan.brown}%`
-        ],
-        cause: damaged ? 'Visual foliage stress detected' : 'Healthy physiological foliage',
-        immediate_action: damaged ? 'AI pathology refinement in progress...' : 'Continue standard field monitoring.',
-        status: clientScan.status,
-        score: clientScan.score,
-        green: clientScan.green,
-        yellow: clientScan.yellow,
-        brown: clientScan.brown,
-        summary: clientScan.summary,
-      }))
-    }
-
-    setBusy(true)
 
     try {
       // 2. Client-side canvas image compression to max 640px JPEG before upload
@@ -1195,8 +1166,12 @@ export function DiseasePage(){
       {/* ── RIGHT: visual condition overview ── */}
       <Card
         title={t("Visual condition result", "Visual condition result")}
-        subtitle={analysis?.is_plant ? `${analysis.crop_detected || t('Identified plant', 'Identified plant')} · ${analysis.affected_parts?.join(', ') || part} · ${analysis.width} × ${analysis.height} px` : t('Result appears here after AI diagnosis', 'Result appears here after AI diagnosis')}
-        action={analysis?.is_plant && (
+        subtitle={busy ? t('AI Vision scanning and diagnosing specimen…', 'AI Vision scanning and diagnosing specimen…') : analysis?.is_plant ? `${analysis.crop_detected || t('Identified plant', 'Identified plant')} · ${analysis.affected_parts?.join(', ') || part} · ${analysis.width} × ${analysis.height} px` : t('Result appears here after AI diagnosis', 'Result appears here after AI diagnosis')}
+        action={busy ? (
+          <span className="quality-status q-attention" style={{background:'#fef3c7', color:'#92400e', borderColor:'#fde68a'}}>
+            🔬 {t('AI Scanning…', 'AI Scanning…')}
+          </span>
+        ) : analysis?.is_plant && (
           <span className={`quality-status ${!analysis.disease_detected ? 'q-good' : 'q-attention'}`}>
             {!analysis.disease_detected ? t('Healthy', 'Healthy') : t(analysis.severity, analysis.severity)}
           </span>
@@ -1220,27 +1195,36 @@ export function DiseasePage(){
               <div style={{flex:1, minWidth:0}}>
                 <div style={{display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', marginBottom:4}}>
                   <small style={{letterSpacing:'0.06em', fontWeight:800, color:'#4a8056'}}>
-                    {analysis ? `${t('DETECTED CROP')}: ${(analysis.crop_detected || 'PLANT').toUpperCase()}` : t('VISIBLE CONDITION')}
+                    {busy ? t('AI VISION SCAN IN PROGRESS') : analysis ? `${t('DETECTED CROP')}: ${(analysis.crop_detected || 'PLANT').toUpperCase()}` : t('VISIBLE CONDITION')}
                   </small>
                 </div>
                 
                 <h2 style={{fontSize:19, lineHeight:1.3, margin:'0 0 4px', color:'#1d3a25'}}>
-                  {analysis ? (analysis.disease_detected ? t(analysis.disease_name, analysis.disease_name) : t('Healthy Crop', 'Healthy Crop')) : busy ? t('Analyzing image…', 'Analyzing image…') : t('Upload an image', 'Upload an image')}
+                  {busy ? t('🔬 Diagnosing pathology with Gemini AI…', '🔬 Diagnosing pathology with Gemini AI…') : analysis ? (analysis.disease_detected ? t(analysis.disease_name, analysis.disease_name) : t('Healthy Crop', 'Healthy Crop')) : t('Upload an image', 'Upload an image')}
                 </h2>
                 
-                {analysis?.scientific_name && (
+                {!busy && analysis?.scientific_name && (
                   <p style={{fontSize:12, fontStyle:'italic', color:'#52795d', margin:'0 0 6px'}}>
                     {t('Pathogen', 'Pathogen')}: {analysis.scientific_name}
                   </p>
                 )}
 
-                {analysis && (
+                {busy && (
+                  <div style={{
+                    marginTop: 8,
+                    padding: '8px 12px',
+                    background: '#f0fdf4',
+                    border: '1px solid #bbf7d0',
+                    borderRadius: 6,
+                    fontSize: 12,
+                    color: '#166534'
+                  }}>
+                    <b>{t('Scanning specimen for pathogen signatures…', 'Scanning specimen for pathogen signatures…')}</b>
+                  </div>
+                )}
+
+                {!busy && analysis && (
                   <div style={{display:'flex', gap:6, flexWrap:'wrap', marginTop:6}}>
-                    {busy && (
-                      <span className="disease-detected-badge" style={{background:'#fef3c7', color:'#92400e', border:'1px solid #fde68a'}}>
-                        ⚡ {t('AI Refining...', 'AI Refining...')}
-                      </span>
-                    )}
                     <span className={`disease-detected-badge ${!analysis.disease_detected ? 'healthy' : analysis.severity?.toLowerCase().includes('sev') || analysis.severity?.toLowerCase().includes('high') ? 'severe' : 'attention'}`}>
                       {!analysis.disease_detected ? t('Healthy Crop', 'Healthy Crop') : `${t(analysis.severity, analysis.severity)} ${t('Severity', 'Severity')}`}
                     </span>
@@ -1307,7 +1291,7 @@ export function DiseasePage(){
             )}
 
             {/* Healthy state note */}
-            {analysis && !analysis.disease_detected && (
+            {!busy && analysis && !analysis.disease_detected && (
               <div className="precaution-box" style={{marginTop:12, borderColor:'#86efac', background:'#f0fdf4'}}>
                 <b style={{color:'#166534'}}>🌱 {t('Crop appears healthy and vigorous', 'Crop appears healthy and vigorous')}</b>
                 <ul style={{color:'#166534'}}>
@@ -1319,7 +1303,7 @@ export function DiseasePage(){
             )}
 
             {/* Immediate action callout right inside the card */}
-            {analysis?.disease_detected && analysis.immediate_action && (
+            {!busy && analysis?.disease_detected && analysis.immediate_action && (
               <div className="disease-immediate-alert">
                 <AlertTriangle size={20} className="disease-immediate-alert-icon"/>
                 <div>
@@ -1338,7 +1322,7 @@ export function DiseasePage(){
     </div>
 
     {/* ── FULL-WIDTH AI DISEASE ANALYSIS & TREATMENT PLAN ── */}
-    {analysis?.is_plant && (
+    {!busy && analysis?.is_plant && (
       <>
         <div className="disease-analysis-block">
           <div className="disease-analysis-header">
