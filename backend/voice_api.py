@@ -4259,9 +4259,10 @@ Return only JSON."""
                 lat, lng = DEFAULT_FARMER["lat"], DEFAULT_FARMER["lng"]
 
     # ── Call the correct module API with real parameters ───────────────────────
-    HEALTH_API   = "http://127.0.0.1:8003"
-    SCHEME_API   = "http://127.0.0.1:8000"
-    PROD_API     = "http://127.0.0.1:8002"
+    _internal_base = os.getenv("INTERNAL_API_URL")
+    HEALTH_API   = os.getenv("HEALTH_API_URL", _internal_base or "http://127.0.0.1:8003")
+    SCHEME_API   = os.getenv("SCHEME_API_URL", _internal_base or "http://127.0.0.1:8000")
+    PROD_API     = os.getenv("PROD_API_URL", _internal_base or "http://127.0.0.1:8002")
 
     async def _get(url):
         try:

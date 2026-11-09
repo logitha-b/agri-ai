@@ -41,6 +41,10 @@ ml/data/water/reservoir.kml
 *.pth
 *.onnx
 
+# Whitelist production model artifacts for Render deployment (< 50MB)
+!backend/models/*.joblib
+!ml/models/*.joblib
+
 # ------------------------------------------------------------------------------
 # 3. Node.js & Frontend Build Outputs
 # ------------------------------------------------------------------------------
