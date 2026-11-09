@@ -1010,6 +1010,10 @@ export default function VoiceAssistant() {
 
   const recTimerRef    = useRef(null)
 
+  const speechRecRef   = useRef(null)
+
+  const browserTranscriptRef = useRef('')
+
   // Processing
 
   const [status,       setStatus]       = useState('idle') // idle|recording|transcribing|thinking|speaking|error
@@ -1289,6 +1293,37 @@ export default function VoiceAssistant() {
   const startRecording = async () => {
 
     setErrorMsg(''); setTranscript(''); setStatus('recording')
+    browserTranscriptRef.current = ''
+
+    // Parallel browser SpeechRecognition (instant client fallback & zero-latency preview)
+    try {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+      if (SpeechRecognition) {
+        const sr = new SpeechRecognition()
+        sr.continuous = true
+        sr.interimResults = true
+        const langMap = {
+          en: 'en-IN', hi: 'hi-IN', ta: 'ta-IN', te: 'te-IN',
+          kn: 'kn-IN', ml: 'ml-IN', pa: 'pa-IN', or: 'or-IN', mr: 'mr-IN', bn: 'bn-IN', gu: 'gu-IN'
+        }
+        sr.lang = langMap[spokenLanguage] || (spokenLanguage !== 'auto' ? spokenLanguage : (language === 'ta' ? 'ta-IN' : language === 'hi' ? 'hi-IN' : 'en-IN'))
+        sr.onresult = (ev) => {
+          let text = ''
+          for (let i = 0; i < ev.results.length; i++) {
+            text += ev.results[i][0].transcript + ' '
+          }
+          if (text.trim()) {
+            browserTranscriptRef.current = text.trim()
+            setTranscript(text.trim())
+          }
+        }
+        sr.onerror = () => {}
+        sr.start()
+        speechRecRef.current = sr
+      }
+    } catch {
+      // SpeechRecognition is optional enhancement
+    }
 
     try {
 
@@ -1314,6 +1349,10 @@ export default function VoiceAssistant() {
 
     } catch (err) {
 
+      if (speechRecRef.current) {
+        try { speechRecRef.current.stop() } catch {}
+      }
+
       setStatus('error')
 
       setErrorMsg(`Microphone access denied: ${err.message}. Please allow microphone access in your browser.`)
@@ -1323,6 +1362,10 @@ export default function VoiceAssistant() {
   }
 
   const stopRecording = () => {
+
+    if (speechRecRef.current) {
+      try { speechRecRef.current.stop() } catch {}
+    }
 
     if (mediaRecRef.current?.state === 'recording') {
 
@@ -1339,12 +1382,20 @@ export default function VoiceAssistant() {
   const processAudio = async () => {
 
     setStatus('transcribing')
+    const fallbackTranscript = browserTranscriptRef.current?.trim() || ''
 
     try {
 
       const blob = new Blob(chunksRef.current, { type:'audio/webm' })
 
       if (blob.size < 1000) {
+
+        if (fallbackTranscript) {
+          setTranscript(fallbackTranscript)
+          setStatus('idle')
+          await sendMessage(fallbackTranscript, { code: spokenLanguage !== 'auto' ? spokenLanguage : (language || 'en'), name: 'User', confidence: 0.9 })
+          return
+        }
 
         setStatus('idle')
 
@@ -1354,7 +1405,7 @@ export default function VoiceAssistant() {
 
       }
 
-            const fd = new FormData()
+      const fd = new FormData()
       fd.append('audio', blob, 'recording.webm')
       if (spokenLanguage && spokenLanguage !== 'auto') {
         fd.append('language', spokenLanguage)
@@ -1362,35 +1413,51 @@ export default function VoiceAssistant() {
         fd.append('language', 'auto')
       }
 
-      const r = await callVoiceApi('/api/voice/transcribe', { method:'POST', body:fd })
-      const data = await safeParseJson(r)
+      let data = null
+      let apiError = null
+      try {
+        const r = await callVoiceApi('/api/voice/transcribe', { method:'POST', body:fd })
+        data = await safeParseJson(r)
+        if (!r.ok || !data) {
+          apiError = data?.detail || `Server returned HTTP ${r?.status || 'error'}`
+        }
+      } catch (fErr) {
+        apiError = fErr.message
+      }
 
-      if (!r.ok || !data) throw new Error(data?.detail || `Transcription failed (${r?.status || 'network error'})`)
+      const finalTranscript = data?.transcript?.trim() || fallbackTranscript
 
-      if (!data.transcript) {
+      if (!finalTranscript) {
         setStatus('idle')
-        setErrorMsg(data.warning || 'No speech detected. Please try again.')
+        setErrorMsg(data?.warning || apiError || 'No speech detected. Please speak clearly and try again.')
         return
       }
 
-      setTranscript(data.transcript)
+      setTranscript(finalTranscript)
 
       const detectedInfo = {
-        code: data.detected_language || 'en',
-        name: data.language_name || 'English',
-        confidence: data.confidence || 0.9,
+        code: data?.detected_language || (spokenLanguage !== 'auto' ? spokenLanguage : (language || 'en')),
+        name: data?.language_name || 'Language',
+        confidence: data?.confidence || 0.9,
       }
       setDetectedSpokenLang(detectedInfo)
       setStatus('idle')
 
       // Auto-send after transcription with detected language context
-      await sendMessage(data.transcript, detectedInfo)
+      await sendMessage(finalTranscript, detectedInfo)
 
     } catch (err) {
 
+      if (fallbackTranscript) {
+        setTranscript(fallbackTranscript)
+        setStatus('idle')
+        await sendMessage(fallbackTranscript, { code: spokenLanguage !== 'auto' ? spokenLanguage : (language || 'en'), name: 'User', confidence: 0.9 })
+        return
+      }
+
       setStatus('error')
 
-      setErrorMsg(`Transcription failed: ${err.message}. Check that the voice backend is running (port 8004).`)
+      setErrorMsg(`Transcription issue: ${err.message}. Please speak clearly or type your question.`)
 
     }
 

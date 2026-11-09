@@ -2308,19 +2308,98 @@ async def _resolve_flood_missing_inputs(module_result: dict, genai_client) -> di
     return module_result
 
 
+async def _transcribe_with_gemini(raw_bytes: bytes, content_type: str, language: str | None = None) -> dict[str, Any]:
+    """Transcribe audio using Gemini multimodal AI when Whisper is not loaded or fails."""
+    if not genai_client:
+        raise HTTPException(503, "Transcription service is currently unavailable.")
+
+    ct = (content_type or "").lower()
+    if "wav" in ct:
+        mime = "audio/wav"
+    elif "mp4" in ct or "m4a" in ct:
+        mime = "audio/mp4"
+    elif "ogg" in ct:
+        mime = "audio/ogg"
+    elif "mp3" in ct or "mpeg" in ct:
+        mime = "audio/mp3"
+    else:
+        mime = "audio/webm"
+
+    lang_hint = ""
+    if language and language.lower() not in ("auto", "none", "null", "auto detect", "auto-detect", ""):
+        lang_name = INDIAN_LANGUAGES.get(language, language)
+        lang_hint = f" The speaker is speaking in language '{lang_name}' (code '{language}')."
+
+    prompt = (
+        "You are an agricultural voice transcription system for Indian farmers.\n"
+        "Listen to this audio recording and transcribe the speech verbatim in the exact language and script spoken by the user.\n"
+        f"{lang_hint}\n"
+        "If the speaker speaks in an Indian language (e.g. Tamil, Hindi, Telugu, Kannada, Malayalam, Punjabi, Odia, Bengali), transcribe in that language's original script or English if spoken in English.\n"
+        "Ignore background static, wind noise, or silence. If completely silent or no speech is audible, return an empty string for transcript.\n"
+        "Respond ONLY with a JSON object in this exact format (do NOT wrap in markdown code blocks or backticks):\n"
+        '{"transcript": "exact transcription", "detected_language": "en", "language_name": "English", "confidence": 0.95}'
+    )
+
+    try:
+        from google.genai import types
+        part = types.Part.from_bytes(data=raw_bytes, mime_type=mime)
+        models_to_try = [GEMINI_MODEL, "gemini-3.5-flash-lite", "gemini-2.0-flash", "gemini-1.5-flash"]
+        seen = set()
+        models = [m for m in models_to_try if not (m in seen or seen.add(m))]
+
+        for m in models:
+            try:
+                resp = genai_client.models.generate_content(
+                    model=m,
+                    contents=[part, prompt]
+                )
+                text = (resp.text or "").strip()
+                text = _re.sub(r"^```(?:json)?\s*", "", text, flags=_re.IGNORECASE)
+                text = _re.sub(r"\s*```$", "", text).strip()
+                data = json.loads(text)
+
+                transcript = (data.get("transcript") or "").strip()
+                detected_code = data.get("detected_language") or (language if language and language != "auto" else "en")
+                detected_name = data.get("language_name") or INDIAN_LANGUAGES.get(detected_code, "English")
+                confidence = float(data.get("confidence") or 0.9)
+
+                if not transcript:
+                    return {
+                        "transcript": "",
+                        "detected_language": detected_code,
+                        "language_name": detected_name,
+                        "confidence": confidence,
+                        "warning": "No speech detected in the audio. Please speak clearly and try again.",
+                        "segments": [],
+                    }
+
+                return {
+                    "transcript": transcript,
+                    "detected_language": detected_code,
+                    "language_name": detected_name,
+                    "confidence": confidence,
+                    "duration_s": 0.0,
+                    "segments": [{"start": 0.0, "end": 0.0, "text": transcript}],
+                    "source": f"gemini ({m})",
+                }
+            except Exception as loop_e:
+                print(f"[voice_api] Gemini audio transcription with {m} failed: {loop_e}")
+                continue
+    except Exception as exc:
+        print(f"[voice_api] Gemini STT error: {exc}")
+
+    raise HTTPException(500, "Audio transcription failed. Please try speaking again or type your question.")
+
+
 @app.post("/api/voice/transcribe")
 async def transcribe_audio(
     audio:    UploadFile = File(...),
     language: str | None = Form(default=None),
 ) -> dict[str, Any]:
     """
-    Transcribe uploaded audio using faster-whisper.
+    Transcribe uploaded audio using faster-whisper or Gemini AI speech fallback.
     Returns transcript, detected language, and confidence segments.
     """
-    model = get_whisper()
-    if model is None:
-        raise HTTPException(503, "Whisper model not loaded. Check server logs.")
-
     # Validate upload
     MAX_BYTES = 25 * 1024 * 1024  # 25 MB
     raw = await audio.read()
@@ -2329,9 +2408,15 @@ async def transcribe_audio(
     if len(raw) > MAX_BYTES:
         raise HTTPException(413, f"Audio file too large ({len(raw)//1024} KB > 25 MB).")
 
+    ct = (audio.content_type or "").lower()
+    model = get_whisper()
+    if model is None:
+        if genai_client:
+            return await _transcribe_with_gemini(raw, ct, language)
+        raise HTTPException(503, "Transcription service is currently unavailable.")
+
     # Save to temp file
     suffix = ".webm"
-    ct = (audio.content_type or "").lower()
     if "wav"  in ct: suffix = ".wav"
     elif "mp4" in ct or "m4a" in ct: suffix = ".mp4"
     elif "ogg" in ct: suffix = ".ogg"
@@ -2392,6 +2477,11 @@ async def transcribe_audio(
             ],
         }
     except Exception as exc:
+        if genai_client:
+            try:
+                return await _transcribe_with_gemini(raw, ct, language)
+            except Exception:
+                pass
         raise HTTPException(500, f"Transcription failed: {exc}") from exc
     finally:
         try:
