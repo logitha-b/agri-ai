@@ -48,8 +48,8 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite").strip()
 
 # Fallback models tried in order if primary is overloaded / unavailable
 GEMINI_FALLBACKS = [
-    "gemini-3.8-flash",
     "gemini-3.5-flash-lite",
+    "gemini-3.8-flash",
     "gemini-3.1-flash-lite",
     "gemini-3.5-flash",
     "gemini-3.7-flash",
@@ -58,12 +58,11 @@ GEMINI_FALLBACKS = [
 
 # ── Gemini client ────────────────────────────────────────────────────────────
 genai_client = None
-if GEMINI_KEY:
-    try:
-        from google import genai as _genai
-        genai_client = _genai.Client(api_key=GEMINI_KEY)
-    except Exception as _e:
-        print(f"[voice_api] Gemini init failed: {_e}")
+try:
+    from google import genai as _genai
+    genai_client = _genai.Client(api_key=GEMINI_KEY)
+except Exception as _e:
+    print(f"[voice_api] Gemini init failed: {_e}")
 
 # ── faster-whisper model ──────────────────────────────────────────────────────
 _whisper_model = None
@@ -2309,9 +2308,27 @@ async def _resolve_flood_missing_inputs(module_result: dict, genai_client) -> di
 
 
 async def _transcribe_with_gemini(raw_bytes: bytes, content_type: str, language: str | None = None) -> dict[str, Any]:
-    """Transcribe audio using Gemini multimodal AI when Whisper is not loaded or fails."""
+    """Transcribe audio using Gemini multimodal AI with high accuracy for Indian languages."""
+    global genai_client
     if not genai_client:
-        raise HTTPException(503, "Transcription service is currently unavailable.")
+        try:
+            from google import genai as _genai
+            key = os.getenv("GEMINI_API_KEY", "").strip()
+            genai_client = _genai.Client(api_key=key)
+        except Exception as e:
+            print(f"[voice_api] On-demand Gemini client init failed: {e}")
+
+    lang_code = str(language).strip().lower() if (language and isinstance(language, str) and str(language).strip().lower() not in ("auto", "none", "null", "auto detect", "auto-detect", "")) else None
+
+    if not genai_client:
+        return {
+            "transcript": "",
+            "detected_language": lang_code or "en",
+            "language_name": INDIAN_LANGUAGES.get(lang_code, "English"),
+            "confidence": 0.0,
+            "warning": "Speech transcription is temporarily unavailable.",
+            "segments": [],
+        }
 
     ct = (content_type or "").lower()
     if "wav" in ct:
@@ -2326,9 +2343,9 @@ async def _transcribe_with_gemini(raw_bytes: bytes, content_type: str, language:
         mime = "audio/webm"
 
     lang_hint = ""
-    if language and language.lower() not in ("auto", "none", "null", "auto detect", "auto-detect", ""):
-        lang_name = INDIAN_LANGUAGES.get(language, language)
-        lang_hint = f" The speaker is speaking in language '{lang_name}' (code '{language}')."
+    if lang_code:
+        lang_name = INDIAN_LANGUAGES.get(lang_code, lang_code)
+        lang_hint = f" The speaker is speaking in language '{lang_name}' (code '{lang_code}')."
 
     prompt = (
         "You are an agricultural voice transcription system for Indian farmers.\n"
@@ -2359,7 +2376,7 @@ async def _transcribe_with_gemini(raw_bytes: bytes, content_type: str, language:
                 data = json.loads(text)
 
                 transcript = (data.get("transcript") or "").strip()
-                detected_code = data.get("detected_language") or (language if language and language != "auto" else "en")
+                detected_code = data.get("detected_language") or (lang_code or "en")
                 detected_name = data.get("language_name") or INDIAN_LANGUAGES.get(detected_code, "English")
                 confidence = float(data.get("confidence") or 0.9)
 
@@ -2388,16 +2405,23 @@ async def _transcribe_with_gemini(raw_bytes: bytes, content_type: str, language:
     except Exception as exc:
         print(f"[voice_api] Gemini STT error: {exc}")
 
-    raise HTTPException(500, "Audio transcription failed. Please try speaking again or type your question.")
+    return {
+        "transcript": "",
+        "detected_language": lang_code or "en",
+        "language_name": INDIAN_LANGUAGES.get(lang_code, "English"),
+        "confidence": 0.0,
+        "warning": "Could not recognize audio. Please try speaking clearly or type your message.",
+        "segments": [],
+    }
 
 
 @app.post("/api/voice/transcribe")
 async def transcribe_audio(
     audio:    UploadFile = File(...),
-    language: str | None = Form(default=None),
+    language: Any = Form(default=None),
 ) -> dict[str, Any]:
     """
-    Transcribe uploaded audio using faster-whisper or Gemini AI speech fallback.
+    Transcribe uploaded audio using Gemini AI speech or faster-whisper.
     Returns transcript, detected language, and confidence segments.
     """
     # Validate upload
@@ -2408,86 +2432,89 @@ async def transcribe_audio(
     if len(raw) > MAX_BYTES:
         raise HTTPException(413, f"Audio file too large ({len(raw)//1024} KB > 25 MB).")
 
+    lang_str = str(language).strip() if (language and isinstance(language, str) and str(language).strip().lower() not in ("auto", "none", "null", "auto detect", "auto-detect", "")) else None
     ct = (audio.content_type or "").lower()
+
+    # Prefer Gemini AI on cloud (lightweight, zero RAM overhead, multi-lingual accuracy)
+    if genai_client:
+        try:
+            return await _transcribe_with_gemini(raw, ct, lang_str)
+        except Exception as gemini_err:
+            print(f"[voice_api] Primary Gemini transcribe failed: {gemini_err}")
+
+    # Fallback to local Whisper if model is available
     model = get_whisper()
-    if model is None:
-        if genai_client:
-            return await _transcribe_with_gemini(raw, ct, language)
-        raise HTTPException(503, "Transcription service is currently unavailable.")
+    if model is not None:
+        suffix = ".webm"
+        if "wav" in ct: suffix = ".wav"
+        elif "mp4" in ct or "m4a" in ct: suffix = ".mp4"
+        elif "ogg" in ct: suffix = ".ogg"
+        elif "mp3" in ct: suffix = ".mp3"
 
-    # Save to temp file
-    suffix = ".webm"
-    if "wav"  in ct: suffix = ".wav"
-    elif "mp4" in ct or "m4a" in ct: suffix = ".mp4"
-    elif "ogg" in ct: suffix = ".ogg"
-    elif "mp3" in ct: suffix = ".mp3"
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+            tmp.write(raw)
+            tmp_path = tmp.name
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-        tmp.write(raw)
-        tmp_path = tmp.name
-
-    try:
-        kwargs: dict = {
-            "beam_size":              5,
-            "vad_filter":             True,
-            "vad_parameters":         {"min_silence_duration_ms": 500},
-            "word_timestamps":        False,
-            "task":                   "transcribe",
-        }
-        if language and language.lower() not in ("auto", "none", "null", "auto detect", "auto-detect", ""):
-            # Whisper does not support 'or' token code; fall back to auto-detect for Odia
-            if language == "or":
-                kwargs["language"] = None
+        try:
+            kwargs: dict = {
+                "beam_size":              5,
+                "vad_filter":             True,
+                "vad_parameters":         {"min_silence_duration_ms": 500},
+                "word_timestamps":        False,
+                "task":                   "transcribe",
+            }
+            if lang_str and lang_str.lower() != "or":
+                kwargs["language"] = lang_str
             else:
-                kwargs["language"] = language
-        else:
-            kwargs["language"] = None
+                kwargs["language"] = None
 
-        segments_iter, info = model.transcribe(tmp_path, **kwargs)
-        segments = list(segments_iter)
+            segments_iter, info = model.transcribe(tmp_path, **kwargs)
+            segments = list(segments_iter)
 
-        transcript = " ".join(s.text.strip() for s in segments if s.text.strip())
-        detected   = info.language
-        confidence = round(float(info.language_probability), 3)
+            transcript = " ".join(s.text.strip() for s in segments if s.text.strip())
+            detected   = info.language
+            confidence = round(float(info.language_probability), 3)
 
-        effective_lang = detected
-        if language and language.lower() not in ("auto", "none", "null", "auto detect", "auto-detect", ""):
-            effective_lang = language
-        detected_name = INDIAN_LANGUAGES.get(effective_lang, INDIAN_LANGUAGES.get(detected, detected.upper()))
+            effective_lang = lang_str or detected
+            detected_name = INDIAN_LANGUAGES.get(effective_lang, INDIAN_LANGUAGES.get(detected, detected.upper()))
 
-        if not transcript:
+            if not transcript:
+                return {
+                    "transcript":          "",
+                    "detected_language":   effective_lang,
+                    "language_name":       detected_name,
+                    "confidence":          confidence,
+                    "warning":             "No speech detected in the audio. Please speak clearly and try again.",
+                    "segments":            [],
+                }
+
             return {
-                "transcript":          "",
+                "transcript":          transcript,
                 "detected_language":   effective_lang,
                 "language_name":       detected_name,
                 "confidence":          confidence,
-                "warning":             "No speech detected in the audio. Please speak clearly and try again.",
-                "segments":            [],
+                "duration_s":          round(info.duration, 1),
+                "segments":            [
+                    {"start": round(s.start, 1), "end": round(s.end, 1), "text": s.text.strip()}
+                    for s in segments[:20]
+                ],
             }
-
-        return {
-            "transcript":          transcript,
-            "detected_language":   effective_lang,
-            "language_name":       detected_name,
-            "confidence":          confidence,
-            "duration_s":          round(info.duration, 1),
-            "segments":            [
-                {"start": round(s.start, 1), "end": round(s.end, 1), "text": s.text.strip()}
-                for s in segments[:20]
-            ],
-        }
-    except Exception as exc:
-        if genai_client:
+        except Exception as exc:
+            print(f"[voice_api] Whisper transcription error: {exc}")
+        finally:
             try:
-                return await _transcribe_with_gemini(raw, ct, language)
+                Path(tmp_path).unlink(missing_ok=True)
             except Exception:
                 pass
-        raise HTTPException(500, f"Transcription failed: {exc}") from exc
-    finally:
-        try:
-            Path(tmp_path).unlink(missing_ok=True)
-        except Exception:
-            pass
+
+    return {
+        "transcript":          "",
+        "detected_language":   lang_str or "en",
+        "language_name":       INDIAN_LANGUAGES.get(lang_str, "English"),
+        "confidence":          0.0,
+        "warning":             "No speech recognized. Please speak clearly or type your question.",
+        "segments":            [],
+    }
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

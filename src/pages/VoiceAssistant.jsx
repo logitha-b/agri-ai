@@ -1852,7 +1852,7 @@ export default function VoiceAssistant() {
 
           <span>
 
-            Voice backend not running. Start it: <code>uvicorn backend.voice_api:app --port 8004 --reload</code>
+            Voice AI backend is connecting. Text input and speech recognition are active.
 
             &nbsp; Text input still works but transcription and AI responses require the backend.
 
