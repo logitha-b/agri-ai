@@ -169,10 +169,10 @@ export default function GovernmentSchemesPage({ onAnalysis }) {
 
   const catalogue = allSchemes.length
     ? allSchemes
-    : recommendations.map(item => item.scheme_details).filter(Boolean)
-  const categories = [...new Set([...recommendations.map(item => item.category), ...catalogue.map(item => item.category)])].sort()
-  const crops = [...new Set(catalogue.flatMap(item => item.crops || []))].sort()
-  const activities = [...new Set(catalogue.flatMap(item => item.activities || []))].sort()
+    : recommendations.map(item => item.scheme_details || item).filter(Boolean)
+  const categories = [...new Set([...recommendations.map(item => item.category), ...catalogue.map(item => item.category)].filter(Boolean))].sort()
+  const crops = [...new Set(catalogue.flatMap(item => item.crops || []).filter(Boolean))].sort()
+  const activities = [...new Set(catalogue.flatMap(item => item.activities || []).filter(Boolean))].sort()
   const loadingMessages = ['Analyzing your agricultural profile', 'Matching your profile with government support programs', 'Preparing explainable recommendations']
   const editProfile = () => {
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })

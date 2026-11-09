@@ -32,9 +32,9 @@ import {
   tr,
 } from './reportTranslations.js'
 
-const SCHEMES_API   = (import.meta.env?.VITE_API_BASE_URL || (import.meta.env?.DEV ? 'http://127.0.0.1:8000' : '')).replace(/\/+$/, '')
-const PROD_API      = (import.meta.env?.VITE_PRODUCTION_API_BASE_URL || import.meta.env?.VITE_API_BASE_URL || (import.meta.env?.DEV ? 'http://127.0.0.1:8002' : '')).replace(/\/+$/, '')
-const HEALTH_API    = (import.meta.env?.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env?.VITE_API_BASE_URL || (import.meta.env?.DEV ? 'http://127.0.0.1:8003' : '')).replace(/\/+$/, '')
+const SCHEMES_API   = (import.meta.env?.VITE_API_BASE_URL || (import.meta.env?.DEV ? 'http://127.0.0.1:8000' : 'https://agri-ai-jnpi.onrender.com')).replace(/\/+$/, '')
+const PROD_API      = (import.meta.env?.VITE_PRODUCTION_API_BASE_URL || import.meta.env?.VITE_API_BASE_URL || (import.meta.env?.DEV ? 'http://127.0.0.1:8002' : 'https://agri-ai-jnpi.onrender.com')).replace(/\/+$/, '')
+const HEALTH_API    = (import.meta.env?.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env?.VITE_API_BASE_URL || (import.meta.env?.DEV ? 'http://127.0.0.1:8003' : 'https://agri-ai-jnpi.onrender.com')).replace(/\/+$/, '')
 
 export const REPORT_STEPS = [
   { id: 'profile',       title: 'Preparing farmer profile' },

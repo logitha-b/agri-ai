@@ -1,6 +1,6 @@
 import rawSchemes from '../data/schemes.json'
 
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8000' : '')).replace(/\/+$/, '')
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8000' : 'https://agri-ai-jnpi.onrender.com')).replace(/\/+$/, '')
 
 function getActiveLanguage() {
   try {
@@ -56,12 +56,15 @@ function evaluateClientFallback(profile) {
       scheme_id: scheme.id,
       scheme_name: scheme.name,
       short_name: scheme.short_name || scheme.name,
+      category: scheme.category || 'Agriculture',
       relevance_class: relClass,
       relevance_class_id: relId,
       ml_confidence: conf,
       why: `${relClass} match based on ${matched.slice(0, 2).join(' and ') || 'general farming profile'}.`,
       eligible: relId >= 2,
       matched_criteria: matched,
+      crops: scheme.crops || [],
+      activities: scheme.activities || [],
       details: scheme,
       scheme_details: scheme,
     }

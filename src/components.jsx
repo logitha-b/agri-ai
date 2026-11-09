@@ -207,12 +207,18 @@ export function Field({ label, children }) {
 
 export function Select({ options, ...props }) {
   const { t } = useLanguage()
+  const safeList = Array.isArray(options) ? options.filter(opt => opt !== undefined && opt !== null) : []
   return <select {...props}>
-    {options.map(option => {
-      if (typeof option === 'string') {
-        return <option key={option} value={option}>{t(option, option)}</option>
+    {safeList.map((option, idx) => {
+      if (typeof option === 'string' || typeof option === 'number') {
+        return <option key={`${option}-${idx}`} value={option}>{t(String(option), String(option))}</option>
       }
-      return <option key={option.value} value={option.value}>{t(option.label, option.label)}</option>
+      if (option && typeof option === 'object') {
+        const val = option.value !== undefined ? option.value : (option.label !== undefined ? option.label : '')
+        const lbl = option.label !== undefined ? option.label : val
+        return <option key={option.key || `${val}-${idx}`} value={val}>{t(String(lbl), String(lbl))}</option>
+      }
+      return null
     })}
   </select>
 }
