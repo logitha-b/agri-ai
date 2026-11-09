@@ -231,9 +231,10 @@ def _get_historical_yield(crop: str, state: str | None, district: str | None, se
         return {"available": False, "crop": crop, "reason": "Training CSV not found.", "data_kind": "unavailable"}
 
     try:
-        import pandas as pd
-        df = pd.read_csv(csv_path, usecols=["state", "district", "crop", "season", "year", "yield_t_ha"])
-        df = df[df["crop"].str.casefold() == icrisat_crop.casefold()]
+        from ml.predict import get_cached_real_data
+        df = get_cached_real_data()
+        crop_series = df["crop"].astype(str).str.casefold()
+        df = df[crop_series == icrisat_crop.casefold()]
 
         # Map user seasons → ICRISAT season labels.
         # ICRISAT uses "Annual" for most crops in southern Indian states (TN, AP, Karnataka etc.)
@@ -245,19 +246,23 @@ def _get_historical_yield(crop: str, state: str | None, district: str | None, se
             "Summer": ["Annual", "Kharif"],
         }.get(season, [season, "Annual"])
 
-        df_season = df[df["season"].str.casefold().isin([s.casefold() for s in season_candidates])]
+        season_candidates_lower = [s.casefold() for s in season_candidates]
+        season_series = df["season"].astype(str).str.casefold()
+        df_season = df[season_series.isin(season_candidates_lower)]
         icrisat_season = ", ".join(season_candidates)
 
         # Try district level first, then state, then all India
         df_district = df_season.copy()
         geo_level = "all-India"
         if state:
-            df_state = df_season[df_season["state"].str.casefold() == state.casefold()]
+            state_series = df_season["state"].astype(str).str.casefold()
+            df_state = df_season[state_series == state.casefold()]
             if len(df_state) >= 5:
                 df_district = df_state
                 geo_level = state
         if district and geo_level != "all-India":
-            df_d = df_district[df_district["district"].str.casefold() == district.casefold()]
+            dist_series = df_district["district"].astype(str).str.casefold()
+            df_d = df_district[dist_series == district.casefold()]
             if len(df_d) >= 3:
                 df_district = df_d
                 geo_level = f"{district}, {state}"

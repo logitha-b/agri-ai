@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from ml.predict import DATA_FILE, ProductionDataUnavailable
+from ml.predict import DATA_FILE, ProductionDataUnavailable, get_cached_real_data
 
 
 ROOT = Path(__file__).resolve().parent
@@ -17,23 +17,30 @@ SYNTHETIC_METADATA = SYNTHETIC_DIR / "crop_yield_synthetic_projection.metadata.j
 GROUP = ["state", "district", "crop", "season"]
 
 
+_SYNTHETIC_CACHE: pd.DataFrame | None = None
+_SYNTHETIC_META_CACHE: dict | None = None
+
+
 def load_synthetic_artifacts() -> tuple[pd.DataFrame, dict]:
+    global _SYNTHETIC_CACHE, _SYNTHETIC_META_CACHE
+    if _SYNTHETIC_CACHE is not None and _SYNTHETIC_META_CACHE is not None:
+        return _SYNTHETIC_CACHE, _SYNTHETIC_META_CACHE
     if not SYNTHETIC_DATA.is_file() or not SYNTHETIC_METADATA.is_file():
         raise ProductionDataUnavailable(
             "Synthetic scenario data is unavailable. Run "
             "python ml/scripts/generate_synthetic_projection.py after the real-data model is ready."
         )
     try:
-        metadata = json.loads(SYNTHETIC_METADATA.read_text(encoding="utf-8"))
-        frame = pd.read_csv(SYNTHETIC_DATA)
+        _SYNTHETIC_META_CACHE = json.loads(SYNTHETIC_METADATA.read_text(encoding="utf-8"))
+        _SYNTHETIC_CACHE = pd.read_csv(SYNTHETIC_DATA)
     except (OSError, json.JSONDecodeError, pd.errors.ParserError) as error:
         raise ProductionDataUnavailable("Synthetic scenario files could not be read.") from error
-    if metadata.get("status") != "ready" or metadata.get("dataset_kind") != "synthetic_scenario":
+    if _SYNTHETIC_META_CACHE.get("status") != "ready" or _SYNTHETIC_META_CACHE.get("dataset_kind") != "synthetic_scenario":
         raise ProductionDataUnavailable("Synthetic scenario provenance metadata is invalid.")
     required = set(GROUP + ["year", "synthetic_yield_t_ha", "synthetic"])
-    if not required.issubset(frame.columns) or frame.empty or not frame["synthetic"].all():
+    if not required.issubset(_SYNTHETIC_CACHE.columns) or _SYNTHETIC_CACHE.empty or not _SYNTHETIC_CACHE["synthetic"].all():
         raise ProductionDataUnavailable("Synthetic scenario data failed provenance validation.")
-    return frame, metadata
+    return _SYNTHETIC_CACHE, _SYNTHETIC_META_CACHE
 
 
 def synthetic_metadata_response() -> dict:
@@ -82,12 +89,12 @@ def predict_synthetic(request: dict) -> dict:
 
     historical = []
     if DATA_FILE.is_file():
-        real = pd.read_csv(DATA_FILE)
+        real = get_cached_real_data()
         real_match = real[
-            real["state"].eq(state)
-            & real["district"].eq(district)
-            & real["crop"].eq(crop)
-            & real["season"].eq(season)
+            real["state"].astype(str).str.lower().eq(state.lower())
+            & real["district"].astype(str).str.lower().eq(district.lower())
+            & real["crop"].astype(str).str.lower().eq(crop.lower())
+            & real["season"].astype(str).str.lower().eq(season.lower())
             & real["year"].le(metadata["baseline_year_range"][1])
         ].sort_values("year")
         historical.extend(
@@ -118,10 +125,10 @@ def predict_synthetic(request: dict) -> dict:
     crop_comparison = []
     if DATA_FILE.is_file():
         try:
-            real = pd.read_csv(DATA_FILE)
+            real = get_cached_real_data()
             comp_match = real[
-                real["state"].eq(state)
-                & real["district"].eq(district)
+                real["state"].astype(str).str.lower().eq(state.lower())
+                & real["district"].astype(str).str.lower().eq(district.lower())
             ]
             if not comp_match.empty:
                 grp = (

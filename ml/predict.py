@@ -21,15 +21,43 @@ class ProductionDataUnavailable(RuntimeError):
     pass
 
 
+_DATA_CACHE: pd.DataFrame | None = None
+_MODEL_CACHE: object | None = None
+_METADATA_CACHE: dict | None = None
+
+
+def get_cached_real_data() -> pd.DataFrame:
+    global _DATA_CACHE
+    if _DATA_CACHE is not None:
+        return _DATA_CACHE
+    dtypes = {
+        'state': 'category', 'district': 'category', 'crop': 'category', 'season': 'category', 'source': 'category',
+        'year': 'int16', 'area_ha': 'float32', 'production_tonnes': 'float32', 'yield_t_ha': 'float32',
+        'rainfall_mm': 'float32', 'temperature_c': 'float32', 'relative_humidity_pct': 'float32',
+        'solar_radiation_mj_m2_day': 'float32', 'previous_observation_yield_t_ha': 'float32',
+        'previous_3_observation_mean_t_ha': 'float32'
+    }
+    cols = list(dtypes.keys())
+    _DATA_CACHE = pd.read_csv(DATA_FILE, dtype=dtypes, usecols=cols)
+    return _DATA_CACHE
+
+
 def load_ready_artifacts():
+    global _MODEL_CACHE, _METADATA_CACHE
     if not DATA_FILE.is_file() or not MODEL_FILE.is_file() or not METADATA_FILE.is_file():
         raise ProductionDataUnavailable(
             "Real dataset required. Add an official source file, process it, then train the model."
         )
-    metadata = json.loads(METADATA_FILE.read_text(encoding="utf-8"))
-    if metadata.get("status") != "ready":
-        raise ProductionDataUnavailable(metadata.get("message", "No trained real-data model is available."))
-    return pd.read_csv(DATA_FILE), joblib.load(MODEL_FILE), metadata
+    if _METADATA_CACHE is None:
+        metadata = json.loads(METADATA_FILE.read_text(encoding="utf-8"))
+        if metadata.get("status") != "ready":
+            raise ProductionDataUnavailable(metadata.get("message", "No trained real-data model is available."))
+        _METADATA_CACHE = metadata
+
+    if _MODEL_CACHE is None:
+        _MODEL_CACHE = joblib.load(MODEL_FILE)
+
+    return get_cached_real_data(), _MODEL_CACHE, _METADATA_CACHE
 
 
 _OPTIONS_CACHE: dict | None = None
@@ -45,7 +73,7 @@ def available_options() -> dict:
     if not DATA_FILE.is_file():
         real_frame: pd.DataFrame | None = None
     else:
-        real_frame = pd.read_csv(DATA_FILE)
+        real_frame = get_cached_real_data()
         if "previous_observation_yield_t_ha" in real_frame.columns:
             real_frame = real_frame[real_frame["previous_observation_yield_t_ha"].notna()]
         if real_frame.empty:
@@ -56,13 +84,11 @@ def available_options() -> dict:
     # ------------------------------------------------------------------
     synth_frame: pd.DataFrame | None = None
     try:
-        from ml.synthetic_projection import SYNTHETIC_DATA  # local import avoids circularity
-
-        if SYNTHETIC_DATA.is_file():
-            _sf = pd.read_csv(SYNTHETIC_DATA)
-            required_cols = {"state", "district", "crop", "season", "year", "synthetic_yield_t_ha", "synthetic"}
-            if required_cols.issubset(_sf.columns) and not _sf.empty and _sf["synthetic"].all():
-                synth_frame = _sf
+        from ml.synthetic_projection import load_synthetic_artifacts  # local import avoids circularity
+        _sf, _ = load_synthetic_artifacts()
+        required_cols = {"state", "district", "crop", "season", "year", "synthetic_yield_t_ha", "synthetic"}
+        if required_cols.issubset(_sf.columns) and not _sf.empty and _sf["synthetic"].all():
+            synth_frame = _sf
     except Exception:  # pragma: no cover — synthetic data is optional
         pass
 
