@@ -1,11 +1,11 @@
 import { AlertTriangle, Loader, RefreshCw, Satellite } from 'lucide-react'
 import { useLanguage } from '../../context/LanguageContext'
 
-export default function SatelliteViewer({ data, loading, error, lat, lng }) {
+export default function SatelliteViewer({ data, loading, error, lat, lng, onRetry }) {
   const { t } = useLanguage()
 
   if (loading) return <LayerLoading label={t('Retrieving latest Sentinel-2 true-colour image…')} />
-  if (error)   return <LayerError message={t(error, error)} />
+  if (error)   return <LayerError message={t(error, error)} onRetry={onRetry} />
   if (!data)   return <LayerEmpty label={t('Satellite image will appear here after field confirmation.')} />
 
   if (!data.available) {
@@ -56,12 +56,34 @@ export function LayerLoading({ label }) {
   )
 }
 
-export function LayerError({ message }) {
+export function LayerError({ message, onRetry }) {
   const { t } = useLanguage()
   return (
-    <div className="ch2-layer-state ch2-layer-error">
+    <div className="ch2-layer-state ch2-layer-error" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
       <AlertTriangle size={26} />
       <p>{message || t('An error occurred retrieving this layer.')}</p>
+      {onRetry && (
+        <button
+          type="button"
+          onClick={onRetry}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '7px 16px',
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            color: '#fff',
+            border: 'none',
+            borderRadius: 7,
+            fontSize: 12,
+            fontWeight: 600,
+            cursor: 'pointer',
+            boxShadow: '0 2px 6px rgba(16,185,129,0.25)',
+          }}
+        >
+          <RefreshCw size={13} /> {t('Retry layer analysis', 'Retry layer analysis')}
+        </button>
+      )}
     </div>
   )
 }

@@ -23,18 +23,32 @@ async function apiFetch(path, opts = {}, lang = 'en') {
     'Accept-Language': lang,
     ...(opts.headers || {})
   }
+  const endpoints = [
+    `${API}${urlPath}`,
+    urlPath,
+    `${API}${urlPath}`,
+  ]
   let res
-  try {
-    res = await fetch(`${API}${urlPath}`, { headers, ...opts })
-    if (!res.ok && res.status === 404 && !API) {
-      res = await fetch(`${FALLBACK_API}${urlPath}`, { headers, ...opts })
+  let lastErr = null
+  for (let i = 0; i < endpoints.length; i++) {
+    try {
+      res = await fetch(endpoints[i], { headers, ...opts })
+      if (res.ok) {
+        return await res.json()
+      }
+      if (res.status === 404 && i === 0) continue
+    } catch (err) {
+      lastErr = err
+      if (i < endpoints.length - 1) {
+        await new Promise(r => setTimeout(r, 1200))
+      }
     }
-  } catch {
-    res = await fetch(`${FALLBACK_API}${urlPath}`, { headers, ...opts })
   }
-  const data = await res.json().catch(() => ({}))
-  if (!res.ok) throw new Error(data.detail || `Health API returned ${res.status}`)
-  return data
+  if (res) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.detail || `Health API returned ${res.status}`)
+  }
+  throw lastErr || new Error('Connection to health service failed. Please retry.')
 }
 
 const CROPS = ['Paddy', 'Groundnut', 'Maize', 'Tomato', 'Millet', 'Wheat', 'Soybean', 'Cotton', 'Sugarcane', 'Sunflower']
@@ -543,6 +557,7 @@ export default function CropHealth() {
                   error={layerErrors.satellite}
                   lat={location?.lat}
                   lng={location?.lng}
+                  onRetry={() => location?.lat && location?.lng && fetchLayer('satellite', `/api/health/satellite?lat=${location.lat}&lng=${location.lng}&days_back=30&language=${language}`)}
                 />
               )}
               {activeLayer === 'ndvi' && (
