@@ -9,8 +9,8 @@ import {
 import { validateProductionQuery } from '../utils/productionValidation'
 import { localizeDataSources, localizeMetadata } from '../services/contentLocalization'
 
-const API_BASE = (import.meta.env.VITE_PRODUCTION_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
-const FALLBACK_API_BASE = import.meta.env.DEV ? 'http://127.0.0.1:8002' : ''
+const API_BASE = (import.meta.env.VITE_PRODUCTION_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8002' : 'https://agri-ai-jnpi.onrender.com')).replace(/\/$/, '')
+const FALLBACK_API_BASE = import.meta.env.DEV ? 'http://127.0.0.1:8002' : 'https://agri-ai-jnpi.onrender.com'
 const OFFICIAL_SOURCES = [
   { name:'ICRISAT District Level Database',organization:'International Crops Research Institute for the Semi-Arid Tropics (ICRISAT)',url:'https://www.icrisat.org/resources/data/district-level-data',usage:'Historical district-level agricultural data; file not integrated.',integrated:false },
   { name:'District-wise, season-wise crop production statistics',organization:'Ministry of Agriculture & Farmers Welfare · Directorate of Economics and Statistics',url:'https://data.gov.in/resource/district-wise-season-wise-crop-production-statistics-1997',usage:'Official Indian crop area and production records; file not integrated.',integrated:false },

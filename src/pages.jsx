@@ -740,7 +740,7 @@ const getSamplePaddyDiagnosis = (t) => ({
 
 export function DiseasePage(){
   const { language, t } = useLanguage()
-  const HEALTH_API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV && typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:8003` : '')).replace(/\/$/, '')
+  const HEALTH_API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV && typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:8003` : 'https://agri-ai-jnpi.onrender.com')).replace(/\/$/, '')
   const [cropHint, setCropHint] = useState('')
   const [part, setPart] = useState('Auto-detect')
   const [file, setFile] = useState(null)
@@ -1494,7 +1494,7 @@ export function DiseasePage(){
 
 function RecommendationPage(){
   const { t, language } = useLanguage()
-  const HEALTH_API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8003' : '')).replace(/\/$/,'')
+  const HEALTH_API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8003' : 'https://agri-ai-jnpi.onrender.com')).replace(/\/$/,'')
 
   // ── Form state ──────────────────────────────────────────────────────────────
   const [location,   setLocation]   = useState('Thiruvallur, Tamil Nadu')
@@ -2006,7 +2006,7 @@ export async function inspectCropImage(file, cropName = 'Paddy', plantPart = 'Gr
 
 function MarketPage(){
   const { t, language } = useLanguage()
-  const HEALTH_API=(import.meta.env.VITE_CROP_HEALTH_API_BASE_URL||import.meta.env.VITE_API_BASE_URL||(import.meta.env.DEV ? 'http://127.0.0.1:8003' : '')).replace(/\/$/,'')
+  const HEALTH_API=(import.meta.env.VITE_CROP_HEALTH_API_BASE_URL||import.meta.env.VITE_API_BASE_URL||(import.meta.env.DEV ? 'http://127.0.0.1:8003' : 'https://agri-ai-jnpi.onrender.com')).replace(/\/$/,'')
 
   // ── Tab ─────────────────────────────────────────────────────────────────────
   const [tab,setTab]=useState('lookup') // 'lookup' | 'profit'
@@ -2796,7 +2796,7 @@ function LossPage(){
 
 function LacPage(){
   const { t, language } = useLanguage()
-  const API=(import.meta.env.VITE_CROP_HEALTH_API_BASE_URL||import.meta.env.VITE_API_BASE_URL||(import.meta.env.DEV ? 'http://127.0.0.1:8003' : '')).replace(/\/$/,'')
+  const API=(import.meta.env.VITE_CROP_HEALTH_API_BASE_URL||import.meta.env.VITE_API_BASE_URL||(import.meta.env.DEV ? 'http://127.0.0.1:8003' : 'https://agri-ai-jnpi.onrender.com')).replace(/\/$/,'')
 
   // ── Form state ──────────────────────────────────────────────────────────────
   const [locationText, setLocationText] = useState('')

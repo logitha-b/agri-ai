@@ -44,8 +44,8 @@ import { Card, Notice } from '../components'
 
 import ModuleResultRenderer from '../components/ModuleResultRenderer'
 
-const VOICE_API = (import.meta.env.VITE_VOICE_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV && typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:8004` : '')).replace(/\/$/, '')
-const HEALTH_API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV && typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:8003` : '')).replace(/\/$/, '')
+const VOICE_API = (import.meta.env.VITE_VOICE_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV && typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:8004` : 'https://agri-ai-jnpi.onrender.com')).replace(/\/$/, '')
+const HEALTH_API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV && typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:8003` : 'https://agri-ai-jnpi.onrender.com')).replace(/\/$/, '')
 
 const safeParseJson = async (res) => {
   if (!res) return null

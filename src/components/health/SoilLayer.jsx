@@ -3,7 +3,7 @@ import { Loader, ShieldCheck, Sparkles } from 'lucide-react'
 import { useLanguage } from '../../context/LanguageContext'
 import { localizeLocationName } from '../../services/contentLocalization'
 
-const API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV && typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:8003` : '')).replace(/\/$/, '')
+const API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV && typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}:8003` : 'https://agri-ai-jnpi.onrender.com')).replace(/\/$/, '')
 
 async function apiGet(path) {
   const cleanPath = path.startsWith('/') ? path : `/${path}`
@@ -122,88 +122,24 @@ function NutrientCard({ nutrient, crop }) {
   )
 }
 
-// ── Dropdown helper ────────────────────────────────────────────────────────
-function Sel({ label, value, onChange, options, disabled, placeholder }) {
-  const { t, language } = useLanguage()
-  return (
-    <div className="field">
-      <span>{t(label, label)}</span>
-      <select value={value} onChange={e => onChange(e.target.value)} disabled={disabled || !options.length}>
-        <option value="">{placeholder ? t(placeholder, placeholder) : `${t('Select')} ${t(label.toLowerCase())}`}</option>
-        {options.map(o => <option key={o} value={o}>{localizeLocationName(o, language)}</option>)}
-      </select>
-    </div>
-  )
-}
-
 // ── Main component ─────────────────────────────────────────────────────────
-export default function SoilLayer({ crop, userState = '', userDistrict = '', userVillage = '' }) {
+export default function SoilLayer({ crop = 'Paddy', userState = 'Tamil Nadu', userDistrict = 'Thiruvallur', userVillage = 'Ponneri' }) {
   const { t, language } = useLanguage()
-  const [dbStatus,    setDbStatus]    = useState(null)
-  const [states,      setStates]      = useState([])
-  const [districts,   setDistricts]   = useState([])
-  const [blocks,      setBlocks]      = useState([])
-  const [villages,    setVillages]    = useState([])
-
-  const [selState,    setSelState]    = useState('')
-  const [selDistrict, setSelDistrict] = useState('')
-  const [selBlock,    setSelBlock]    = useState('')
-  const [selVillage,  setSelVillage]  = useState('')
-
   const [result,   setResult]   = useState(null)
   const [loading,  setLoading]  = useState(false)
   const [error,    setError]    = useState('')
 
-  // Loading flags for each cascade level
-  const [loadingS, setLoadingS] = useState(false)
-  const [loadingD, setLoadingD] = useState(false)
-  const [loadingB, setLoadingB] = useState(false)
-  const [loadingV, setLoadingV] = useState(false)
+  const loadGeminiSoil = async (customState, customDistrict, customBlock, customVillage) => {
+    const s = customState || userState || 'Tamil Nadu'
+    const d = customDistrict || userDistrict || 'Thiruvallur'
+    const b = customBlock || userVillage || 'Ponneri'
+    const v = customVillage || userVillage || 'Ponneri'
+    const c = crop || 'Paddy'
 
-
-  const loadSampleSoil = async () => {
-    const sampleState = 'Tamil Nadu'
-    const sampleDistrict = 'Thiruvallur'
-    const sampleBlock = 'Ellapuram'
-    const sampleVillage = 'Agaram2'
-    setSelState(sampleState)
-    setSelDistrict(sampleDistrict)
-    setSelBlock(sampleBlock)
-    setSelVillage(sampleVillage)
-    setLoading(true)
-    setError('')
-    setResult(null)
-    try {
-      const [dList, bList, vList] = await Promise.all([
-        apiGet(`/api/soil/districts?state=${encodeURIComponent(sampleState)}`),
-        apiGet(`/api/soil/blocks?state=${encodeURIComponent(sampleState)}&district=${encodeURIComponent(sampleDistrict)}`),
-        apiGet(`/api/soil/villages?state=${encodeURIComponent(sampleState)}&district=${encodeURIComponent(sampleDistrict)}&block=${encodeURIComponent(sampleBlock)}`),
-      ])
-      if (dList.districts) setDistricts(dList.districts)
-      if (bList.blocks) setBlocks(bList.blocks)
-      if (vList.villages) setVillages(vList.villages)
-      const nut = await apiGet(`/api/soil/nutrients?state=${encodeURIComponent(sampleState)}&district=${encodeURIComponent(sampleDistrict)}&block=${encodeURIComponent(sampleBlock)}&village=${encodeURIComponent(sampleVillage)}&language=${encodeURIComponent(language || 'en')}`)
-      setResult(nut)
-    } catch (e) {
-      setError(e.message || 'Failed to load sample soil data.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const loadGeminiSoil = async (stateVal, distVal, blockVal, villVal) => {
-    const s = stateVal || selState || userState || 'Tamil Nadu'
-    const d = distVal || selDistrict || userDistrict || 'Thiruvallur'
-    const b = blockVal || selBlock || 'Ponneri'
-    const v = villVal || selVillage || userVillage || 'Ponneri'
-    if (!selState && s) setSelState(s)
-    if (!selDistrict && d) setSelDistrict(d)
-    if (!selBlock && b) setSelBlock(b)
-    if (!selVillage && v) setSelVillage(v)
     setLoading(true)
     setError('')
     try {
-      const data = await apiGet(`/api/soil/gemini-estimate?state=${encodeURIComponent(s)}&district=${encodeURIComponent(d)}&block=${encodeURIComponent(b)}&village=${encodeURIComponent(v)}&crop=${encodeURIComponent(crop || 'Paddy')}&language=${encodeURIComponent(language || 'en')}`)
+      const data = await apiGet(`/api/soil/gemini-estimate?state=${encodeURIComponent(s)}&district=${encodeURIComponent(d)}&block=${encodeURIComponent(b)}&village=${encodeURIComponent(v)}&crop=${encodeURIComponent(c)}&language=${encodeURIComponent(language || 'en')}`)
       if (data && data.nutrients) {
         setResult(data)
       } else {
@@ -216,215 +152,10 @@ export default function SoilLayer({ crop, userState = '', userDistrict = '', use
     }
   }
 
-  // ── Step 1: check DB, load states ──────────────────────────────────────
+  // Load soil intelligence via Gemini on mount or when crop/location changes
   useEffect(() => {
-    apiGet('/api/soil/status')
-      .then(s => {
-        setDbStatus(s)
-        if (s.db_ready) {
-          setLoadingS(true)
-          apiGet('/api/soil/states')
-            .then(d => setStates(d.states || []))
-            .catch(() => {})
-            .finally(() => setLoadingS(false))
-        }
-      })
-      .catch(() => setDbStatus({ available: false, db_ready: false }))
-  }, [])
-
-  // ── Step 2: pre-fill from user's form inputs once states are loaded ────
-  useEffect(() => {
-    if (!states.length || !userState) return
-    // Find best matching state (case-insensitive fuzzy)
-    const norm = s => s.toLowerCase().replace(/\s+/g, '')
-    const match = states.find(s => norm(s) === norm(userState)) ||
-                  states.find(s => norm(s).includes(norm(userState)) || norm(userState).includes(norm(s)))
-    if (match) setSelState(match)
-  }, [states, userState])
-
-  // ── Step 3: when state is set, load districts and try to match district ─
-  useEffect(() => {
-    if (!selState) { setDistricts([]); setSelDistrict(''); setBlocks([]); setSelBlock(''); setVillages([]); setSelVillage(''); setResult(null); return }
-    setLoadingD(true)
-    apiGet(`/api/soil/districts?state=${encodeURIComponent(selState)}`)
-      .then(d => {
-        const list = d.districts || []
-        setDistricts(list)
-        // Auto-match the user's district
-        if (userDistrict) {
-          const norm = s => s.toLowerCase().replace(/\s+/g, '')
-          const match = list.find(s => norm(s) === norm(userDistrict)) ||
-                        list.find(s => norm(s).includes(norm(userDistrict)) || norm(userDistrict).includes(norm(s)))
-          if (match) setSelDistrict(match)
-        }
-      })
-      .catch(() => {})
-      .finally(() => setLoadingD(false))
-  }, [selState, userDistrict]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ── Step 4: when district set, load blocks and auto-resolve village block ─
-  useEffect(() => {
-    if (!selState || !selDistrict) { setBlocks([]); setSelBlock(''); setVillages([]); setSelVillage(''); setResult(null); return }
-    setLoadingB(true)
-    apiGet(`/api/soil/blocks?state=${encodeURIComponent(selState)}&district=${encodeURIComponent(selDistrict)}`)
-      .then(d => {
-        const list = d.blocks || []
-        setBlocks(list)
-      })
-      .catch(() => {})
-      .finally(() => setLoadingB(false))
-
-    if (userVillage) {
-      apiGet(`/api/soil/find-block?state=${encodeURIComponent(selState)}&district=${encodeURIComponent(selDistrict)}&village=${encodeURIComponent(userVillage)}`)
-        .then(res => {
-          if (res && res.block) {
-            setSelBlock(res.block)
-          }
-        })
-        .catch(() => {})
-    }
-  }, [selState, selDistrict, userVillage])
-
-  // ── Step 5: load villages (by block if selected, or for entire district) ──
-  useEffect(() => {
-    if (!selState || !selDistrict) { setVillages([]); setSelVillage(''); setResult(null); return }
-    setLoadingV(true)
-    const url = `/api/soil/villages?state=${encodeURIComponent(selState)}&district=${encodeURIComponent(selDistrict)}${selBlock ? `&block=${encodeURIComponent(selBlock)}` : ''}`
-    apiGet(url)
-      .then(d => {
-        const list = d.villages || []
-        setVillages(list)
-        // Auto-match user's village
-        if (userVillage && !selVillage) {
-          const norm = s => s.toLowerCase().replace(/[^a-z0-9]/g, '')
-          const uvNorm = norm(userVillage)
-          const match = list.find(s => norm(s) === uvNorm) ||
-                        list.find(s => norm(s).startsWith(uvNorm) || uvNorm.startsWith(norm(s))) ||
-                        list.find(s => norm(s).includes(uvNorm) || uvNorm.includes(norm(s)))
-          if (match) {
-            setSelVillage(match)
-          }
-        }
-      })
-      .catch(() => {})
-      .finally(() => setLoadingV(false))
-  }, [selState, selDistrict, selBlock, userVillage])
-
-  const handleStateChange = (v) => {
-    setSelState(v)
-    setSelDistrict('')
-    setSelBlock('')
-    setSelVillage('')
-    setResult(null)
-  }
-
-  const handleDistrictChange = (v) => {
-    setSelDistrict(v)
-    setSelBlock('')
-    setSelVillage('')
-    setResult(null)
-  }
-
-  const handleBlockChange = (v) => {
-    setSelBlock(v)
-    setSelVillage('')
-    setResult(null)
-  }
-
-  const handleVillageChange = async (v) => {
-    setSelVillage(v)
-    if (v && !selBlock && selState && selDistrict) {
-      try {
-        const res = await apiGet(`/api/soil/find-block?state=${encodeURIComponent(selState)}&district=${encodeURIComponent(selDistrict)}&village=${encodeURIComponent(v)}`)
-        if (res && res.block) {
-          setSelBlock(res.block)
-        }
-      } catch (e) {
-        // ignore
-      }
-    }
-  }
-
-  // ── Step 6: fetch nutrients when block or village is selected ─────────
-  useEffect(() => {
-    if (!selState || !selDistrict) return
-    if (!selBlock && !selVillage) return
-
-    let activeBlock = selBlock
-    let isCancelled = false
-    const fetchNutrients = async () => {
-      setLoading(true); setError(''); setResult(null)
-      try {
-        if (!activeBlock && selVillage) {
-          const fb = await apiGet(`/api/soil/find-block?state=${encodeURIComponent(selState)}&district=${encodeURIComponent(selDistrict)}&village=${encodeURIComponent(selVillage)}`)
-          if (fb && fb.block) {
-            activeBlock = fb.block
-            if (!isCancelled) setSelBlock(fb.block)
-          }
-        }
-
-        if (selVillage && activeBlock) {
-          const nut = await apiGet(`/api/soil/nutrients?state=${encodeURIComponent(selState)}&district=${encodeURIComponent(selDistrict)}&block=${encodeURIComponent(activeBlock)}&village=${encodeURIComponent(selVillage)}&language=${encodeURIComponent(language || 'en')}`)
-          if (!isCancelled) setResult(nut)
-        } else if (activeBlock) {
-          const bSummary = await apiGet(`/api/soil/block-summary?state=${encodeURIComponent(selState)}&district=${encodeURIComponent(selDistrict)}&block=${encodeURIComponent(activeBlock)}&language=${encodeURIComponent(language || 'en')}`)
-          if (!isCancelled) setResult(bSummary)
-        }
-      } catch (e) {
-        try {
-          const aiData = await apiGet(`/api/soil/gemini-estimate?state=${encodeURIComponent(selState)}&district=${encodeURIComponent(selDistrict)}&block=${encodeURIComponent(activeBlock || 'Ponneri')}&village=${encodeURIComponent(selVillage || 'Ponneri')}&crop=${encodeURIComponent(crop || 'Paddy')}&language=${encodeURIComponent(language || 'en')}`)
-          if (!isCancelled && aiData && aiData.nutrients) {
-            setResult(aiData)
-            return
-          }
-        } catch {
-          // continue
-        }
-        if (!isCancelled) setError(e.message || 'Failed to load soil data.')
-      } finally {
-        if (!isCancelled) setLoading(false)
-      }
-    }
-    fetchNutrients()
-    return () => { isCancelled = true }
-  }, [selState, selDistrict, selBlock, selVillage, language])
-
-  // ── DB not ready ───────────────────────────────────────────────────────
-  if (!dbStatus) return <div className="sn-state sn-loading"><Loader size={20} className="ch2-spin"/><p>{t("Checking soil database…", "Checking soil database…")}</p></div>
-  if (!dbStatus.db_ready && !result) return (
-    <div className="sn-state sn-unavail" style={{ display: 'flex', flexDirection: 'column', gap: 14, alignItems: 'center', textAlign: 'center', padding: '28px 20px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <span style={{ fontSize: 28 }}>🌱</span>
-        <div>
-          <b>{t("Soil database building…", "Soil database building…")}</b>
-          <p style={{ margin: '4px 0 0 0', color: '#64748b', fontSize: 13 }}>
-            {t("The offline soil nutrient index is being built. You can generate immediate soil diagnostics with Gemini AI.", "The offline soil nutrient index is being built. You can generate immediate soil diagnostics with Gemini AI.")}
-          </p>
-        </div>
-      </div>
-      <button
-        type="button"
-        onClick={() => loadGeminiSoil()}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: '10px 22px',
-          background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-          color: '#ffffff',
-          border: 'none',
-          borderRadius: 8,
-          fontSize: 13,
-          fontWeight: 600,
-          cursor: 'pointer',
-          boxShadow: '0 2px 8px rgba(59,130,246,0.35)',
-        }}
-      >
-        <Sparkles size={16}/>
-        {t("✨ Generate with Gemini AI", "✨ Generate with Gemini AI")}
-      </button>
-    </div>
-  )
+    loadGeminiSoil()
+  }, [userState, userDistrict, userVillage, crop, language]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const macro = result?.nutrients?.filter(n => n.nutrient_type === 'Macro') || []
   const micro = result?.nutrients?.filter(n => n.nutrient_type === 'Micro') || []
@@ -434,16 +165,15 @@ export default function SoilLayer({ crop, userState = '', userDistrict = '', use
     <div className="sn-root">
       {/* Header */}
       <div className="sn-header">
-        <span className={`ch2-kind-badge ${result?.ai_generated ? '' : 'ch2-kind-measured'}`} style={result?.ai_generated ? { background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe' } : {}}>
-          {result?.ai_generated ? `✨ ${result.source || 'GEMINI AI INTELLIGENCE'}` : t("REAL DATA", "REAL DATA")}
+        <span className="ch2-kind-badge" style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe' }}>
+          ✨ {result?.source || t("GEMINI AI INTELLIGENCE", "GEMINI AI INTELLIGENCE")}
         </span>
         <span className="sn-header-source">
-          {result?.ai_generated ? `${t('AI Soil Intelligence', 'AI Soil Intelligence')} · ${result.crop || crop || 'Paddy'} · ${result.location?.district || userDistrict || 'Thiruvallur'}` : `${t("Soil Health Card", "Soil Health Card")} · ${t("India Data Portal", "India Data Portal")} · ${dbStatus.total_rows?.toLocaleString()} ${t("records", "records")} · ${dbStatus.years?.join(', ')}`}
+          {`${t('AI Soil Intelligence', 'AI Soil Intelligence')} · ${crop || 'Paddy'} · ${userDistrict || 'Thiruvallur'}, ${userState || 'Tamil Nadu'}`}
         </span>
       </div>
 
-      
-      {/* Prominent Sample Data Banner for Soil Health Card */}
+      {/* Prominent Gemini AI Soil Intelligence Action Banner */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -461,13 +191,14 @@ export default function SoilLayer({ crop, userState = '', userDistrict = '', use
             <span>✨ {t('Soil Health Card & AI Intelligence', 'Soil Health Card & AI Intelligence')}</span>
           </div>
           <div style={{ fontSize: 12, color: '#4b7355', marginTop: 2 }}>
-            {t('Tamil Nadu · Thiruvallur · Ponneri / Ellapuram · 12 macro/micro nutrients with Gemini AI', 'Tamil Nadu · Thiruvallur · Ponneri / Ellapuram · 12 macro/micro nutrients with Gemini AI')}
+            {`${userState || 'Tamil Nadu'} · ${userDistrict || 'Thiruvallur'} · ${userVillage || 'Ponneri'} · ${t('12 macro/micro nutrients with Gemini AI', '12 macro/micro nutrients with Gemini AI')}`}
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <button
             type="button"
             onClick={() => loadGeminiSoil()}
+            disabled={loading}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -479,17 +210,18 @@ export default function SoilLayer({ crop, userState = '', userDistrict = '', use
               borderRadius: 7,
               fontSize: 12,
               fontWeight: 600,
-              cursor: 'pointer',
+              cursor: loading ? 'not-allowed' : 'pointer',
               boxShadow: '0 2px 6px rgba(59,130,246,0.25)',
             }}
             title={t("Generate AI soil assessment for this location using Gemini", "Generate AI soil assessment for this location using Gemini")}
           >
             <Sparkles size={15}/>
-            {t('✨ Generate with Gemini AI', '✨ Generate with Gemini AI')}
+            {loading ? t('Generating with Gemini AI…', 'Generating with Gemini AI…') : t('✨ Generate with Gemini AI', '✨ Generate with Gemini AI')}
           </button>
           <button
             type="button"
-            onClick={loadSampleSoil}
+            onClick={() => loadGeminiSoil()}
+            disabled={loading}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -501,13 +233,13 @@ export default function SoilLayer({ crop, userState = '', userDistrict = '', use
               borderRadius: 7,
               fontSize: 12,
               fontWeight: 600,
-              cursor: 'pointer',
+              cursor: loading ? 'not-allowed' : 'pointer',
               boxShadow: '0 2px 6px rgba(16,185,129,0.25)',
             }}
-            title={t("Load official Soil Health Card sample data for Agaram2, Thiruvallur", "Load official Soil Health Card sample data for Agaram2, Thiruvallur")}
+            title={t("Load Soil Health Card data via Gemini AI", "Load Soil Health Card data via Gemini AI")}
           >
             <Sparkles size={15}/>
-            {t('✨ Load Sample Soil Health Card', '✨ Load Sample Soil Health Card')}
+            {t('✨ Load Soil Health Card (Gemini AI)', '✨ Load Soil Health Card (Gemini AI)')}
           </button>
         </div>
       </div>
@@ -543,82 +275,14 @@ export default function SoilLayer({ crop, userState = '', userDistrict = '', use
         </div>
       )}
 
-      {/* Location selector — pre-filled from user's form, editable if needed */}
-      <div className="sn-selector">
-        <div className="sn-selector-note">
-          <ShieldCheck size={13}/>
-          <span>
-            {selState && selDistrict
-              ? `${t("Location pre-filled from your field details.", "Location pre-filled from your field details.")} ${(!selVillage) ? t("Select a block and village to load soil data.", "Select a block and village to load soil data.") : ''}`
-              : t("Select your state, district, block and village to view soil nutrient data.", "Select your state, district, block and village to view soil nutrient data.")}
-          </span>
-        </div>
-        <div className="sn-selector-grid">
-          <Sel label="State"    value={selState}    onChange={handleStateChange}    options={states}    disabled={loadingS} placeholder={loadingS ? t('Loading…', 'Loading…') : t('Select state', 'Select state')} />
-          <Sel label="District" value={selDistrict} onChange={handleDistrictChange} options={districts} disabled={loadingD || !selState}    placeholder={loadingD ? t('Loading…', 'Loading…') : !selState ? t('Select state first', 'Select state first') : t('Select district', 'Select district')} />
-          <Sel label="Block"    value={selBlock}    onChange={handleBlockChange}    options={blocks}    disabled={loadingB || !selDistrict} placeholder={loadingB ? t('Loading…', 'Loading…') : !selDistrict ? t('Select district first', 'Select district first') : t('Select block', 'Select block')} />
-          <Sel label="Village"  value={selVillage}  onChange={handleVillageChange}  options={villages}  disabled={loadingV || !selDistrict || !villages.length}    placeholder={loadingV ? t('Loading…', 'Loading…') : !selDistrict ? t('Select district first', 'Select district first') : t('Select village', 'Select village')} />
-        </div>
-      </div>
-
       {/* Loading / error */}
-      {loading && <div className="sn-state sn-loading"><Loader size={20} className="ch2-spin"/><p>{t('Loading soil nutrients for', 'Loading soil nutrients for')} {localizeLocationName(selVillage, language)}…</p></div>}
+      {loading && (
+        <div className="sn-state sn-loading">
+          <Loader size={20} className="ch2-spin"/>
+          <p>{t('Generating soil nutrients with Gemini AI…', 'Generating soil nutrients with Gemini AI…')}</p>
+        </div>
+      )}
       {error && !loading && <div className="sn-state sn-error"><p>{t(error, error)}</p></div>}
-
-      {/* Prompt to select village if auto-fill only got state/district */}
-      {!loading && !error && !result && selDistrict && !selVillage && (
-        <div className="sn-state sn-empty" style={{ display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center' }}>
-          <span>📍</span>
-          <p>{t("Select a block and village to load soil nutrient data for your area.", "Select a block and village to load soil nutrient data for your area.")}</p>
-          <button
-            type="button"
-            onClick={() => loadGeminiSoil()}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '8px 18px',
-              background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: 7,
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: 'pointer',
-              marginTop: 4
-            }}
-          >
-            <Sparkles size={14}/>
-            {t("✨ Analyze Soil with Gemini AI", "✨ Analyze Soil with Gemini AI")}
-          </button>
-        </div>
-      )}
-
-      {/* No match found for user's details */}
-      {!loading && !error && !result && selState && !selDistrict && !loadingD && (
-        <div className="sn-state sn-empty">
-          <span>🗺️</span>
-          <p>{t('Select your state, district, block and village to view soil nutrient data.')}</p>
-          <small>
-            {t('Data covers')} {dbStatus.villages?.toLocaleString()} {t('villages across')} {dbStatus.states} {t('states · 2024-25')}
-          </small>
-        </div>
-      )}
-
-      {/* If genuine government data is unavailable for this location */}
-      {hasResult && result.available === false && (
-        <div className="sn-state sn-unavail" style={{ margin: '16px 0', padding: '20px', background: '#fef3c7', borderRadius: 8, border: '1px solid #fde68a' }}>
-          <span style={{ fontSize: 24 }}>ℹ️</span>
-          <div>
-            <b style={{ color: '#92400e', display: 'block', marginBottom: 4 }}>
-              {t("Official Soil Data Unavailable for Selected Location", "Official Soil Data Unavailable for Selected Location")}
-            </b>
-            <p style={{ color: '#78350f', margin: 0, fontSize: 13, lineHeight: 1.5 }}>
-              {t(result.reason || "No Soil Health Card survey records found for this specific location. Official government data has not been published for this village/block.", "No Soil Health Card survey records found for this specific location. Official government data has not been published for this village/block.")}
-            </p>
-          </div>
-        </div>
-      )}
 
       {/* Results */}
       {hasResult && result.available !== false && (
@@ -627,12 +291,10 @@ export default function SoilLayer({ crop, userState = '', userDistrict = '', use
           <div className="sn-result-head">
             <div>
               <span className="ch2-eyebrow">
-                {result.level === 'block' ? t('BLOCK-LEVEL SUMMARY') : t('VILLAGE-LEVEL DATA')} · {t('SOIL HEALTH CARD 2024-25')}
+                {t('GEMINI AI SOIL INTELLIGENCE')} · {t('SOIL HEALTH CARD 2024-25')}
               </span>
               <b>
-                {result.level === 'village'
-                  ? `${localizeLocationName(result.location?.village, language)}, ${localizeLocationName(result.location?.block, language)}, ${localizeLocationName(result.location?.district, language)}, ${localizeLocationName(result.location?.state, language)}`
-                  : `${localizeLocationName(result.block, language)}, ${localizeLocationName(result.district, language)}`}
+                {`${localizeLocationName(result.location?.village || userVillage || 'Ponneri', language)}, ${localizeLocationName(result.location?.district || userDistrict || 'Thiruvallur', language)}, ${localizeLocationName(result.location?.state || userState || 'Tamil Nadu', language)}`}
               </b>
             </div>
             {result.fallback_note && <div className="sn-fallback-note">⚠ {t(result.fallback_note, result.fallback_note)}</div>}
@@ -641,7 +303,7 @@ export default function SoilLayer({ crop, userState = '', userDistrict = '', use
           {/* Interpretation note */}
           <div className="sn-interp-banner">
             <ShieldCheck size={13}/>
-            <span>{t(result.value_interpretation, result.value_interpretation).replace(/'sample_count'/g, `'${t('sample count', 'Sample Count')}'`)}</span>
+            <span>{t(result.value_interpretation || '12 dominant Soil Health Card nutrient parameters analyzed via Gemini AI & ICAR agronomic thresholds.', result.value_interpretation || '12 dominant Soil Health Card nutrient parameters analyzed via Gemini AI & ICAR agronomic thresholds.')}</span>
           </div>
 
           {/* Macro nutrients */}
@@ -663,8 +325,6 @@ export default function SoilLayer({ crop, userState = '', userDistrict = '', use
               </div>
             </div>
           )}
-
-
         </>
       )}
     </div>

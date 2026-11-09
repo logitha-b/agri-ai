@@ -33,7 +33,7 @@ import {
   computeSummary,
 } from '../components/cashflow/storage'
 
-const API   = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
+const API   = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8003' : 'https://agri-ai-jnpi.onrender.com')).replace(/\/$/, '')
 const money = v => `₹${Number(v || 0).toLocaleString('en-IN')}`
 
 // ── Sample data — R. Kumar, Thiruvallur, Paddy Kharif 2026 ───────────────────

@@ -11,7 +11,7 @@ import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis
 import { Card, Notice, Progress, RiskBadge } from '../../components'
 import { pearlData } from '../../data/mockData'
 
-const API   = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8003' : '')).replace(/\/$/, '')
+const API   = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8003' : 'https://agri-ai-jnpi.onrender.com')).replace(/\/$/, '')
 const money = v => `₹${Number(v||0).toLocaleString('en-IN')}`
 const axis  = { fontSize: 11, fill: '#738176' }
 const tt    = { border: '1px solid #e0e8e0', borderRadius: 8, fontSize: 12 }

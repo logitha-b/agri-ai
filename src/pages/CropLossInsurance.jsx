@@ -27,7 +27,7 @@ import InsuranceAssistant from '../components/loss/InsuranceAssistant'
 import RecoveryAdvisor   from '../components/loss/RecoveryAdvisor'
 import ClaimTracker      from '../components/loss/ClaimTracker'
 
-const API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
+const API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8003' : 'https://agri-ai-jnpi.onrender.com')).replace(/\/$/, '')
 
 const STEPS = [
   { id: 0, label: 'Report Damage',  icon: FileText },

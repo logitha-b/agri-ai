@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react'
 import { AlertTriangle, CheckCircle2, CloudRain, Droplets, Loader, ShieldAlert, Sparkles, Thermometer, Wind } from 'lucide-react'
 import { Card, Notice } from '../../components'
 
-const API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8003' : '')).replace(/\/$/, '')
+const API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8003' : 'https://agri-ai-jnpi.onrender.com')).replace(/\/$/, '')
 const SEASONS = ['Kusmi · Winter', 'Rangeeni · Rainy', 'Kharif', 'Rabi', 'Summer']
 const LEVEL_COLOR = { Low: '#2d6a4f', Moderate: '#b87c1a', High: '#c0392b', 'Insufficient Data': '#8a968c' }
 

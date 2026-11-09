@@ -8,7 +8,7 @@ import { DamPanel, ReservoirPanel } from '../components/water/FeaturePanel'
 import FloodRiskCard from '../components/water/FloodRiskCard'
 import RainfallChart from '../components/water/RainfallChart'
 
-const API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
+const API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8003' : 'https://agri-ai-jnpi.onrender.com')).replace(/\/$/, '')
 
 async function get(path) {
   const r = await fetch(`${API}${path}`)

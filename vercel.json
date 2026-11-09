@@ -2,9 +2,32 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "https://agri-ai-jnpi.onrender.com/api/:path*"
+    },
+    {
+      "source": "/predict-schemes",
+      "destination": "https://agri-ai-jnpi.onrender.com/predict-schemes"
+    },
+    {
+      "source": "/schemes",
+      "destination": "https://agri-ai-jnpi.onrender.com/schemes"
+    },
+    {
+      "source": "/schemes/:path*",
+      "destination": "https://agri-ai-jnpi.onrender.com/schemes/:path*"
+    },
+    {
+      "source": "/model-info",
+      "destination": "https://agri-ai-jnpi.onrender.com/model-info"
+    },
+    {
+      "source": "/outcome-sample",
+      "destination": "https://agri-ai-jnpi.onrender.com/outcome-sample"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
 }
-

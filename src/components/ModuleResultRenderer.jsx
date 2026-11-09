@@ -1095,7 +1095,7 @@ function MarketResult({ data }) {
 
   if (!data?.available) return <UnavailableState message={data?.reason || 'Market data unavailable.'} />
 
-  const HEALTH_API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8003' : '')).replace(/\/$/, '')
+  const HEALTH_API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8003' : 'https://agri-ai-jnpi.onrender.com')).replace(/\/$/, '')
   const markets = data.markets || []
   const displayed = showAll ? markets : markets.slice(0, 3)
 

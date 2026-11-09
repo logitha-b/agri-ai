@@ -11,8 +11,8 @@ import CropReport from '../components/health/CropReport'
 import { localizeLocationName } from '../services/contentLocalization'
 import { initialFarmer } from '../data/mockData'
 
-const API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
-const FALLBACK_API = import.meta.env.DEV ? 'http://127.0.0.1:8003' : ''
+const API = (import.meta.env.VITE_CROP_HEALTH_API_BASE_URL || import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8003' : 'https://agri-ai-jnpi.onrender.com')).replace(/\/$/, '')
+const FALLBACK_API = import.meta.env.DEV ? 'http://127.0.0.1:8003' : 'https://agri-ai-jnpi.onrender.com'
 
 async function apiFetch(path, opts = {}, lang = 'en') {
   const sep = path.includes('?') ? '&' : '?'
