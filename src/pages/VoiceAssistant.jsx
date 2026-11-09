@@ -1331,7 +1331,15 @@ export default function VoiceAssistant() {
 
       chunksRef.current = []
 
-      const mr = new MediaRecorder(stream, { mimeType:'audio/webm' })
+      let mimeType = 'audio/webm'
+      if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported) {
+        if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) mimeType = 'audio/webm;codecs=opus'
+        else if (MediaRecorder.isTypeSupported('audio/webm')) mimeType = 'audio/webm'
+        else if (MediaRecorder.isTypeSupported('audio/mp4')) mimeType = 'audio/mp4'
+        else if (MediaRecorder.isTypeSupported('audio/aac')) mimeType = 'audio/aac'
+      }
+
+      const mr = new MediaRecorder(stream, mimeType ? { mimeType } : undefined)
 
       mr.ondataavailable = e => { if (e.data.size > 0) chunksRef.current.push(e.data) }
 
@@ -1429,7 +1437,11 @@ export default function VoiceAssistant() {
 
       if (!finalTranscript) {
         setStatus('idle')
-        setErrorMsg(data?.warning || apiError || 'No speech detected. Please speak clearly and try again.')
+        let userMsg = data?.warning || apiError || 'No speech detected. Please speak clearly and try again.'
+        if (typeof userMsg === 'string' && (userMsg.includes('Whisper') || userMsg.includes('server logs') || userMsg.includes('503'))) {
+          userMsg = 'No speech detected. Please hold the microphone and speak clearly, or type your question below.'
+        }
+        setErrorMsg(userMsg)
         return
       }
 
@@ -1457,7 +1469,13 @@ export default function VoiceAssistant() {
 
       setStatus('error')
 
-      setErrorMsg(`Transcription issue: ${err.message}. Please speak clearly or type your question.`)
+      let errText = err.message || ''
+      if (errText.includes('Whisper') || errText.includes('server logs') || errText.includes('503')) {
+        errText = 'Could not process audio. Please speak clearly or type your question.'
+      } else {
+        errText = `Transcription issue: ${errText}. Please speak clearly or type your question.`
+      }
+      setErrorMsg(errText)
 
     }
 
